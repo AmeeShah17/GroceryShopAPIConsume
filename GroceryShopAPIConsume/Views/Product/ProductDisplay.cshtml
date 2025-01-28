@@ -1,0 +1,53 @@
+﻿@model IEnumerable<GroceryShopAPIConsume.Models.ProductModel>
+
+
+<h3 style="margin-left:270px">Category Table</h3>
+<a asp-controller="Customer" asp-action="CustomerAddForm">
+    <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+</a>
+@TempData["Message"]
+<!-- Table with stripped rows -->
+<table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
+    <thead>
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Product Price</th>
+            <th scope="col">Product Code</th>
+            <th scope="col">Discription</th>
+            <th scope="col">Created</th>
+            <th scope="col">Modified</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var items in Model)
+        {
+            <tr>
+                <td>@items.ProductID</td>
+                <td>@items.ProductName</td>
+                <td>@items.ProductPrice</td>
+                <td>@items.ProductCode</td>
+                <td>@items.Description</td>
+                <td>@items.Created</td>
+                <td>@items.Modified</td>
+
+                <td>
+                    @* <a href="@Url.Action("Edit","Customer",new {CustomerID=items.CustomerID})"> *@
+                    <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
+                    @* </a> *@
+                </td>
+                <td>
+                    <a href="@Url.Action("Delete","Product",new {ProductID=items.ProductID})">
+                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                    </a>
+                </td>
+            </tr>
+        }
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+
+    </tbody>
+</table>
+<!-- End Table with stripped rows -->

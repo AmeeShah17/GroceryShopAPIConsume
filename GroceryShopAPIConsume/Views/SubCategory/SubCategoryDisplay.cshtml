@@ -1,0 +1,48 @@
+﻿@model IEnumerable<GroceryShopAPIConsume.Models.SubCategoryModel>
+
+<h3 style="margin-left:270px">Sub Category Table</h3>
+<a asp-controller="Customer" asp-action="CustomerAddForm">
+    <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+</a>
+<!-- Table with stripped rows -->
+<table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
+    <thead>
+        <tr>
+            <th scope="col">Sub Category ID</th>
+            <th scope="col">Sub Category Name</th>
+            <th scope="col">Category ID</th>
+            <th scope="col">Category Name</th>
+            <th scope="col">Created</th>
+            <th scope="col">Modified</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var items in Model)
+        {
+            <tr>
+                <td>@items.SubCategoryID</td>
+                <td>@items.SubCategoryName</td>
+                <td>@items.CategoryID</td>
+                <td>@items.CategoryName</td>
+                <td>@items.Created</td>
+                <td>@items.Modified</td>
+
+                <td>
+                    @* <a href="@Url.Action("Edit","Customer",new {CustomerID=items.CustomerID})"> *@
+                    <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
+                    @* </a> *@
+                </td>
+                <td>
+                    <a href="@Url.Action("Delete","SubCategory",new {SubCategoryID=items.SubCategoryID})">
+                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+<!-- End Table with stripped rows -->

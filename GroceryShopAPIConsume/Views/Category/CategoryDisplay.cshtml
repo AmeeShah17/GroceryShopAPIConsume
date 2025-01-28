@@ -1,0 +1,51 @@
+﻿@model IEnumerable<GroceryShopAPIConsume.Models.CategoryModel>
+
+    
+       <h3 style="margin-left:270px">Category Table</h3>
+        <a asp-controller="Category" asp-action="AddCategory">
+            <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+        </a>
+        <!-- Table with stripped rows -->
+            <table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
+            <thead>
+                <tr>
+                    <th scope="col">Category ID</th>
+                    <th scope="col">Category Image</th>
+                    <th scope="col">Category Name</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Modified</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var items in Model)
+                {
+                    <tr>
+                        <td>@items.CateoryID</td>
+                        <td>
+                            <img src="@items.CategoryImage" alt="@items.CategoryName" width="100px" height="100px" />
+                        </td>
+                        <td>@items.CategoryName</td>
+                        <td>@items.Created</td>
+                        <td>@items.Modified</td>
+                        
+                        <td>
+                            @* <a href="@Url.Action("Edit","Customer",new {CustomerID=items.CustomerID})"> *@
+                                <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
+                            @* </a> *@
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Delete","Category",new {CategoryID=items.CateoryID})">
+                                <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        <!-- End Table with stripped rows -->
+
+    
