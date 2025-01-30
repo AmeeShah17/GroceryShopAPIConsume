@@ -1,6 +1,7 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers
 {
@@ -41,6 +42,75 @@ namespace GroceryShopAPIConsume.Controllers
                 TempData["Message"] = "SubCategory Deleted";
             }
             return RedirectToAction("SubCategoryDisplay");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Save([FromForm] SubCategoryModel subcategory)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var json = JsonConvert.SerializeObject(subcategory);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response;
+
+                    if (subcategory.SubCategoryID == null || subcategory.SubCategoryID == 0)
+                    {
+                        response = await _client.PostAsync($"{_client.BaseAddress}/Order/Add", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Inserted Successfully";
+                            return RedirectToAction("OrderDisplay");
+                        }
+                    }
+
+                    else
+                    {
+                        response = await _client.PutAsync($"{_client.BaseAddress}/Order/Update/{order.OrderID}", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Updated Successfully";
+                            return RedirectToAction("OrderDisplay");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                Console.WriteLine(TempData["ErrorMessage"]);
+            }
+            await LoadCustomerList();
+            return RedirectToAction("OrderDisplay");
+        }
+
+        public async Task<IActionResult> AddOrder(int? OrderID)
+        {
+            await LoadCustomerList();
+            if (OrderID.HasValue)
+            {
+                var response = await _client.GetAsync($"{_client.BaseAddress}/Order/GetbyID/{OrderID}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var order = JsonConvert.DeserializeObject<OrderModel>(data);
+                    //ViewBag.customerList = await GetStatesByCountryID(city.CountryID);
+                    return View(order);
+                }
+            }
+            return View("AddOrder", new OrderModel());
+        }
+
+        private async Task LoadCustomerList()
+        {
+            var response = await _client.GetAsync($"{_client.BaseAddress}/Order/CustomerDropDown/Customer");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var customer = JsonConvert.DeserializeObject<List<CustomerDropDownModel>>(data);
+                ViewBag.customerList = customer;
+            }
         }
     }
 }

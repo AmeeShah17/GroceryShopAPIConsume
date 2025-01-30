@@ -1,6 +1,7 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers
 {
@@ -43,9 +44,66 @@ namespace GroceryShopAPIConsume.Controllers
             return RedirectToAction("CategoryDisplay");
         }
 
-        public IActionResult AddCategory()
+        
+        [HttpPost]
+        public async Task<IActionResult> Save([FromForm] CategoryModel category)
         {
-            return View();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var json = JsonConvert.SerializeObject(category);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response;
+
+                    if (category.CateoryID == null || category.CateoryID == 0)
+                    {
+                        response = await _client.PostAsync($"{_client.BaseAddress}/Category/Add", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Inserted Successfully";
+                            return RedirectToAction("CategoryDisplay");
+                        }
+                    }
+
+                    else
+                    {
+                        response = await _client.PutAsync($"{_client.BaseAddress}/Category/Update/{category.CateoryID}", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Updated Successfully";
+                            return RedirectToAction("CategoryDisplay");
+                        }
+                    }
+                }
+
+                //if (response.IsSuccessStatusCode)
+                //    return RedirectToAction("ProductDisplay");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                Console.WriteLine(TempData["ErrorMessage"]);
+            }
+            //await LoadUserList();
+            return RedirectToAction("CategoryDisplay");
+        }
+        
+        public async Task<IActionResult> AddCategory(int? CategoryID)
+        {
+            //await LoadUserList();
+            if (CategoryID.HasValue)
+            {
+                var response = await _client.GetAsync($"{_client.BaseAddress}/Category/GetbyID/{CategoryID}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var category = JsonConvert.DeserializeObject<CategoryModel>(data);
+                    //ViewBag.userList = await GetStatesByCountryID(city.CountryID);
+                    return View(category);
+                }
+            }
+            return View("AddCategory", new CategoryModel());
         }
     }
 }

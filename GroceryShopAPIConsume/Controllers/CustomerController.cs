@@ -1,6 +1,7 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers
 {
@@ -40,6 +41,65 @@ namespace GroceryShopAPIConsume.Controllers
                 TempData["Message"] = "Customer Deleted";
             }
             return RedirectToAction("CustomerDisplay");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Save([FromForm] CustomerModel customer)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var json = JsonConvert.SerializeObject(customer);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response;
+
+                    if (customer.CustomerID == null || customer.CustomerID == 0)
+                    {
+                        response = await _client.PostAsync($"{_client.BaseAddress}/Customer/Add", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Inserted Successfully";
+                            return RedirectToAction("CustomerDisplay");
+                        }
+                    }
+
+                    else
+                    {
+                        response = await _client.PutAsync($"{_client.BaseAddress}/Customer/Update/{customer.CustomerID}", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Updated Successfully";
+                            return RedirectToAction("CustomerDisplay");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                Console.WriteLine(TempData["ErrorMessage"]);
+            }
+            //await LoadUserList();
+            return RedirectToAction("CustomerDisplay");
+        }
+
+        public async Task<IActionResult> AddCustomer(int? CustomerID)
+        {
+            //await LoadUserList();
+            if (CustomerID.HasValue)
+            {
+                var response = await _client.GetAsync($"{_client.BaseAddress}/Customer/GetbyID/{CustomerID}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var customer = JsonConvert.DeserializeObject<CustomerModel>(data);
+                    //ViewBag.userList = await GetStatesByCountryID(city.CountryID);
+                    return View(customer);
+                }
+            }
+            return View("AddCustomer", new CustomerModel());
         }
     }
 }

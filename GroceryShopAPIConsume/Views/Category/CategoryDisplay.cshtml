@@ -6,7 +6,7 @@
             <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
         </a>
         <!-- Table with stripped rows -->
-            <table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
+<table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
             <thead>
                 <tr>
                     <th scope="col">Category ID</th>
@@ -32,9 +32,9 @@
                         <td>@items.Modified</td>
                         
                         <td>
-                            @* <a href="@Url.Action("Edit","Customer",new {CustomerID=items.CustomerID})"> *@
+                            <a href="@Url.Action("AddCategory","Category",new {CategoryID=items.CateoryID})">
                                 <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
-                            @* </a> *@
+                            </a>
                         </td>
                         <td>
                             <a href="@Url.Action("Delete","Category",new {CategoryID=items.CateoryID})">
