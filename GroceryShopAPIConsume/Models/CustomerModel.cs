@@ -11,8 +11,8 @@
         public string PinCode { get; set; }
         public string Address { get; set; }
         public bool IsActive { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Modified { get; set; }
+        public DateTime? Created { get; set; }
+        public DateTime? Modified { get; set; }
     }
 
     public class CustomerDropDownModel

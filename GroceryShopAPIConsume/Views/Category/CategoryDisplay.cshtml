@@ -1,39 +1,55 @@
 ﻿@model IEnumerable<GroceryShopAPIConsume.Models.CategoryModel>
 
-    
-       <h3 style="margin-left:270px">Category Table</h3>
+<head>
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .table-container {
+            padding: 20px;
+        }
+
+        .table thead {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h3 style="margin-left:130px">Category Table</h3>
         <a asp-controller="Category" asp-action="AddCategory">
-            <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+            <button style="margin-left:130px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
         </a>
-        <!-- Table with stripped rows -->
-<table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
+        <table class="table table-hover align-middle table-bordered" style="margin-left:120px">
             <thead>
                 <tr>
-                    <th scope="col">Category ID</th>
-                    <th scope="col">Category Image</th>
-                    <th scope="col">Category Name</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Modified</th>
-                    <th scope="col">Edit</th>
-                    <th scope="col">Delete</th>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
-
                 @foreach (var items in Model)
                 {
                     <tr>
                         <td>@items.CateoryID</td>
-                        <td>
-                            <img src="@items.CategoryImage" alt="@items.CategoryName" width="100px" height="100px" />
-                        </td>
                         <td>@items.CategoryName</td>
                         <td>@items.Created</td>
                         <td>@items.Modified</td>
-                        
                         <td>
                             <a href="@Url.Action("AddCategory","Category",new {CategoryID=items.CateoryID})">
-                                <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
                             </a>
                         </td>
                         <td>
@@ -43,9 +59,8 @@
                         </td>
                     </tr>
                 }
-
             </tbody>
         </table>
-        <!-- End Table with stripped rows -->
-
-    
+    </div>
+</body>
+</html>

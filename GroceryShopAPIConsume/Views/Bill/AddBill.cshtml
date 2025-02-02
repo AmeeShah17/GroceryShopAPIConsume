@@ -1,12 +1,18 @@
-﻿@model GroceryShopAPIConsume.Models.OrderDetailModel
+﻿@model GroceryShopAPIConsume.Models.BillModel
 
-<div class="card" style="margin-left:200px">
+<div class="card" style="margin-left:240px">
     <div class="card-body">
         <h5 class="card-title">User Form</h5>
-        <form method="post" asp-action="Save" asp-controller="OrderDetail">
+        <form method="post" asp-action="Save" asp-controller="Bill">
             <div class="row mb-3">
                 <div class="col-sm-10">
-                    <input type="hidden" class="form-control" asp-for="OrderDetailID">
+                    <input type="hidden" class="form-control" asp-for="BillID">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Bill Number</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" asp-for="BillNumber">
                 </div>
             </div>
             <div class="row mb-3">
@@ -33,22 +39,23 @@
                     </select>
                 </div>
             </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Quantity</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" asp-for="Quantity">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Amount</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" asp-for="Amount">
-                </div>
-            </div>
+           
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Total Amount</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" asp-for="TotalAmount">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Discount</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" asp-for="Discount">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Net Amount</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" asp-for="NetAmount">
                 </div>
             </div>
             <div class="text-center">

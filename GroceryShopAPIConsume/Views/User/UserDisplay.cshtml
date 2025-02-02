@@ -1,46 +1,78 @@
 ﻿@model IEnumerable<GroceryShopAPIConsume.Models.UserModel>
-
-<h3 style="margin-left:270px">User Table</h3>
-<a asp-controller="User" asp-action="AddUser">
-    <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
-</a>
-<table class="table table-hover table-bordered" style="width:80%;margin-left:270px">
-    <thead>
-        <tr>
-            <th scope="col">User ID</th>
-            <th scope="col">User Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Password</th>
-            <th scope="col">Created</th>
-            <th scope="col">Modified</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-
-        @foreach (var items in Model)
-        {
-            <tr>
-                <td>@items.UserID</td>
-                <td>@items.UserName</td>
-                <td>@items.Email</td>
-                <td>@items.Password</td>
-                <td>@items.Created</td>
-                <td>@items.Modified</td>
-
-                <td>
-                    <a href="@Url.Action("AddUser","User",new {UserID=items.UserID})">
-                    <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
-                    </a>
-                </td>
-                <td>
-                    <a href="@Url.Action("Delete","User",new {UserID=items.UserID})">
-                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                    </a>
-                </td>
-            </tr>
+<head>
+   
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
         }
 
-    </tbody>
-</table>
+        .table-container {
+            padding: 20px;
+        }
+
+        .table thead {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h3 style="margin-left:130px">User Table</h3>
+        <a asp-controller="User" asp-action="AddUser">
+            <button style="margin-left:130px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+        </a>
+        <table class="table table-hover align-middle table-bordered" style="margin-left:120px">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <th>Is Active</th>
+                    <th>Password</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var items in Model)
+                {
+                    <tr>
+                        <td>@items.UserID</td>
+                        <td>@items.UserName</td>
+                        <td>@items.Email</td>
+                        <td>
+                            <span class="badge @(items.IsActive ? "bg-success" : "bg-danger")">
+                                @(items.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>@items.Password</td>
+                        <td>@items.Created</td>
+                        <td>@items.Modified</td>
+                        
+                        <td>
+                            <a href="@Url.Action("AddUser","User",new {UserID=items.UserID})">
+                                <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Delete","User",new {UserID=items.UserID})">
+                                <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+

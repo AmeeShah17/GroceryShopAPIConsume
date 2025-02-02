@@ -1,48 +1,71 @@
 ﻿@model IEnumerable<GroceryShopAPIConsume.Models.SubCategoryModel>
 
-<h3 style="margin-left:270px">Sub Category Table</h3>
-<a asp-controller="Customer" asp-action="CustomerAddForm">
-    <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
-</a>
-<!-- Table with stripped rows -->
-<table class="table table-hover table-bordered table-responsive" style="width:80%;margin-left:270px">
-    <thead>
-        <tr>
-            <th scope="col">Sub Category ID</th>
-            <th scope="col">Sub Category Name</th>
-            <th scope="col">Category ID</th>
-            <th scope="col">Category Name</th>
-            <th scope="col">Created</th>
-            <th scope="col">Modified</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-        </tr>
-    </thead>
-    <tbody>
 
-        @foreach (var items in Model)
-        {
-            <tr>
-                <td>@items.SubCategoryID</td>
-                <td>@items.SubCategoryName</td>
-                <td>@items.CategoryID</td>
-                <td>@items.CategoryName</td>
-                <td>@items.Created</td>
-                <td>@items.Modified</td>
-
-                <td>
-                    @* <a href="@Url.Action("Edit","Customer",new {CustomerID=items.CustomerID})"> *@
-                    <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
-                    @* </a> *@
-                </td>
-                <td>
-                    <a href="@Url.Action("Delete","SubCategory",new {SubCategoryID=items.SubCategoryID})">
-                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                    </a>
-                </td>
-            </tr>
+<head>
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
         }
 
-    </tbody>
-</table>
-<!-- End Table with stripped rows -->
+        .table-container {
+            padding: 20px;
+        }
+
+        .table thead {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h3 style="margin-left:130px">Sub Category Table</h3>
+        <a asp-controller="SubCategory" asp-action="AddSubCategory">
+            <button style="margin-left:130px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+        </a>
+        <table class="table table-hover align-middle table-bordered" style="margin-left:120px">
+            <thead>
+                <tr>
+                    <th>Sub Category ID</th>
+                    <th>Sub Category Name</th>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var items in Model)
+                {
+                    <tr>
+                        <td>@items.SubCategoryID</td>
+                        <td>@items.SubCategoryName</td>
+                        <td>@items.CategoryID</td>
+                        <td><span class="badge bg-secondary">@items.CategoryName</span></td>
+                        <td>@items.Created</td>
+                        <td>@items.Modified</td>
+                        <td>
+                            <a href="@Url.Action("AddSubCategory","SubCategory",new {SubCategoryID=items.SubCategoryID})">
+                                <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Delete","SubCategory",new {SubCategoryID=items.SubCategoryID})">
+                                <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+

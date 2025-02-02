@@ -1,5 +1,6 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -46,7 +47,7 @@ namespace GroceryShopAPIConsume.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] SubCategoryModel subcategory)
-        {
+        { 
             try
             {
                 if (ModelState.IsValid)
@@ -57,21 +58,21 @@ namespace GroceryShopAPIConsume.Controllers
 
                     if (subcategory.SubCategoryID == null || subcategory.SubCategoryID == 0)
                     {
-                        response = await _client.PostAsync($"{_client.BaseAddress}/Order/Add", content);
+                        response = await _client.PostAsync($"{_client.BaseAddress}/SubCategory/Add", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Inserted Successfully";
-                            return RedirectToAction("OrderDisplay");
+                            return RedirectToAction("SubCategoryDisplay");
                         }
                     }
 
                     else
                     {
-                        response = await _client.PutAsync($"{_client.BaseAddress}/Order/Update/{order.OrderID}", content);
+                        response = await _client.PutAsync($"{_client.BaseAddress}/SubCategory/Update/{subcategory.SubCategoryID}", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Updated Successfully";
-                            return RedirectToAction("OrderDisplay");
+                            return RedirectToAction("SubCategoryDisplay");
                         }
                     }
                 }
@@ -81,35 +82,35 @@ namespace GroceryShopAPIConsume.Controllers
                 TempData["ErrorMessage"] = ex.Message;
                 Console.WriteLine(TempData["ErrorMessage"]);
             }
-            await LoadCustomerList();
-            return RedirectToAction("OrderDisplay");
+            await LoadCategoryist();
+            return RedirectToAction("SubCategoryDisplay");
         }
 
-        public async Task<IActionResult> AddOrder(int? OrderID)
+        public async Task<IActionResult> AddSubCategory(int? SubCategoryID)
         {
-            await LoadCustomerList();
-            if (OrderID.HasValue)
+            await LoadCategoryist();
+            if (SubCategoryID.HasValue)
             {
-                var response = await _client.GetAsync($"{_client.BaseAddress}/Order/GetbyID/{OrderID}");
+                var response = await _client.GetAsync($"{_client.BaseAddress}/SubCategory/GetbyID/{SubCategoryID}");
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
-                    var order = JsonConvert.DeserializeObject<OrderModel>(data);
+                    var subcategory = JsonConvert.DeserializeObject<SubCategoryModel>(data);
                     //ViewBag.customerList = await GetStatesByCountryID(city.CountryID);
-                    return View(order);
+                    return View(subcategory);
                 }
             }
-            return View("AddOrder", new OrderModel());
+            return View("AddSubCategory", new SubCategoryModel());
         }
 
-        private async Task LoadCustomerList()
+        private async Task LoadCategoryist()
         {
-            var response = await _client.GetAsync($"{_client.BaseAddress}/Order/CustomerDropDown/Customer");
+            var response = await _client.GetAsync($"{_client.BaseAddress}/SubCategory/CategoryDropDown/Category");
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var customer = JsonConvert.DeserializeObject<List<CustomerDropDownModel>>(data);
-                ViewBag.customerList = customer;
+                var category = JsonConvert.DeserializeObject<List<CategoryDropDownModel>>(data);
+                ViewBag.categoryList = category;
             }
         }
     }

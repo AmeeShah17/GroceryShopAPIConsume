@@ -1,53 +1,109 @@
 ﻿@model IEnumerable<GroceryShopAPIConsume.Models.ProductModel>
 
-
-<h3 style="margin-left:270px">Category Table</h3>
-<a asp-controller="Customer" asp-action="CustomerAddForm">
-    <button style="margin-left:270px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
-</a>
-@TempData["Message"]
-<!-- Table with stripped rows -->
-<table class="table table-hover table-bordered table-responsive" style="width:80%;margin-left:270px">
-    <thead>
-        <tr>
-            <th scope="col">Product ID</th>
-            <th scope="col">Product Name</th>
-            <th scope="col">Product Price</th>
-            <th scope="col">Product Code</th>
-            <th scope="col">Discription</th>
-            <th scope="col">Created</th>
-            <th scope="col">Modified</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-
-        @foreach (var items in Model)
-        {
-            <tr>
-                <td>@items.ProductID</td>
-                <td>@items.ProductName</td>
-                <td>@items.ProductPrice</td>
-                <td>@items.ProductCode</td>
-                <td>@items.Description</td>
-                <td>@items.Created</td>
-                <td>@items.Modified</td>
-
-                <td>
-                    @* <a href="@Url.Action("Edit","Customer",new {CustomerID=items.CustomerID})"> *@
-                    <button class="btn btn-success"><i class="bi bi-pencil"></i></button>
-                    @* </a> *@
-                </td>
-                <td>
-                    <a href="@Url.Action("Delete","Product",new {ProductID=items.ProductID})">
-                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                    </a>
-                </td>
-            </tr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Table</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
         }
-        <span class="text-danger">@TempData["ErrorMessage"]</span>
 
-    </tbody>
-</table>
-<!-- End Table with stripped rows -->
+        .table-container {
+            padding: 20px;
+        }
+
+        .table thead {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .email-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .email-link:hover {
+                text-decoration: underline;
+            }
+
+        .file-upload-icon {
+            font-size: 20px;
+            color: #6c63ff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container table-container">
+        <h3 style="margin-left:130px">Category Table</h3>
+        <a asp-controller="Product" asp-action="AddProduct">
+            <button style="margin-left:130px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
+        </a>
+        <table class="table table-hover align-middle table-bordered" style="margin-left:120px">
+            <thead>
+                <tr>
+                    
+                    <th>Product ID</th>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>SubCategory ID</th>
+                    <th>SubCategory Name</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var items in Model)
+                {
+                    <tr>
+                        <td>@items.ProductID</td>
+                        <td>
+                            <img src="@items.ProductImage" height="100px" width="100px" class="rounded" width="50" />
+                        </td>
+                        <td>@items.ProductName</td>
+                        <td>@items.ProductPrice</td>
+                        <td>@items.ProductCode</td>
+                        <td>@items.Description</td>
+                        <td>@items.SubCategoryID</td>
+                        <td>
+                            <span class="badge bg-secondary">@items.SubCategoryName</span>
+                        </td>
+                        <td>@items.Created</td>
+                        <td>@items.Modified</td>
+
+                        <td>
+                            <a href="@Url.Action("AddProduct","Product",new {ProductID=items.ProductID})">
+                                <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Delete","Product",new {ProductID=items.ProductID})">
+                                <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

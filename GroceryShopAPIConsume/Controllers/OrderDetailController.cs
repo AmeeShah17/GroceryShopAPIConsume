@@ -79,13 +79,15 @@ namespace GroceryShopAPIConsume.Controllers
                 TempData["ErrorMessage"] = ex.Message;
                 Console.WriteLine(TempData["ErrorMessage"]);
             }
-            //await LoadUserList();
+            await LoadOrderist();
+            await LoadCustomerist();
             return RedirectToAction("OrderDetailDisplay");
         }
 
         public async Task<IActionResult> AddOrderDetail(int? OrderDetailID)
         {
-            //await LoadUserList();
+            await LoadOrderist();
+            await LoadCustomerist();
             if (OrderDetailID.HasValue)
             {
                 var response = await _client.GetAsync($"{_client.BaseAddress}/OrderDetail/GetbyID/{OrderDetailID}");
@@ -98,6 +100,28 @@ namespace GroceryShopAPIConsume.Controllers
                 }
             }
             return View("AddOrderDetail", new OrderDetailModel());
+        }
+
+        private async Task LoadOrderist()
+        {
+            var response = await _client.GetAsync($"{_client.BaseAddress}/OrderDetail/OrderDropDown/Order");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var order = JsonConvert.DeserializeObject<List<OrderDropDownModel>>(data);
+                ViewBag.orderList = order;
+            }
+        }
+
+        private async Task LoadCustomerist()
+        {
+            var response = await _client.GetAsync($"{_client.BaseAddress}/OrderDetail/CustomerDropDown/Customer");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var customer = JsonConvert.DeserializeObject<List<CustomerModel>>(data);
+                ViewBag.customerList = customer;
+            }
         }
     }
 }
