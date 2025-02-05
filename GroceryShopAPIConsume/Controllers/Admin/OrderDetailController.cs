@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class OrderDetailController : Controller
     {
@@ -14,6 +14,7 @@ namespace GroceryShopAPIConsume.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
         }
+        #region Display
 
         [HttpGet]
         public IActionResult OrderDetailDisplay()
@@ -30,6 +31,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View(orderdetail);
         }
+        #endregion
+
+        #region Delete
 
         [HttpGet]
         public IActionResult Delete(int OrderDetailID)
@@ -41,6 +45,10 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return RedirectToAction("OrderDetailDisplay");
         }
+        #endregion
+
+
+        #region Save
 
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] OrderDetailModel orderdetail)
@@ -83,6 +91,9 @@ namespace GroceryShopAPIConsume.Controllers
             await LoadCustomerist();
             return RedirectToAction("OrderDetailDisplay");
         }
+        #endregion
+
+        #region AddOrderDetail
 
         public async Task<IActionResult> AddOrderDetail(int? OrderDetailID)
         {
@@ -101,6 +112,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View("AddOrderDetail", new OrderDetailModel());
         }
+        #endregion
+
+        #region LoadOrderList
 
         private async Task LoadOrderist()
         {
@@ -112,6 +126,9 @@ namespace GroceryShopAPIConsume.Controllers
                 ViewBag.orderList = order;
             }
         }
+        #endregion
+
+        #region LoadCustomerLis
 
         private async Task LoadCustomerist()
         {
@@ -123,5 +140,6 @@ namespace GroceryShopAPIConsume.Controllers
                 ViewBag.customerList = customer;
             }
         }
+        #endregion
     }
 }

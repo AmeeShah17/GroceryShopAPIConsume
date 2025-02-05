@@ -1,8 +1,36 @@
 ﻿@model GroceryShopAPIConsume.Models.UserModel
 
-<div class="card" style="margin-left:200px">
-    <div class="card-body">
-        <h5 class="card-title">User Form</h5>
+<head>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-container {
+            margin-top: 30px;
+            margin-left: 180px;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .form-container h5 {
+                background: #007bff;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h5>User Form</h5>
+
         <form method="post" asp-action="Save" asp-controller="User">
             <div class="row mb-3">
                 <div class="col-sm-10">
@@ -41,3 +69,4 @@
         </form>
     </div>
 </div>
+</body>

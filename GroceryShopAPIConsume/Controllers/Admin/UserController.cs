@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class UserController : Controller
     {
@@ -15,7 +15,7 @@ namespace GroceryShopAPIConsume.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
         }
-
+        #region Display
         [HttpGet]
         public IActionResult UserDisplay()
         {
@@ -31,6 +31,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View(user);
         }
+        #endregion
+
+        #region Delete
 
         [HttpGet]
         public IActionResult Delete(int UserID)
@@ -42,6 +45,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return RedirectToAction("UserDisplay");
         }
+        #endregion
+
+        #region Save
 
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] UserModel user)
@@ -75,7 +81,7 @@ namespace GroceryShopAPIConsume.Controllers
                     }
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -85,6 +91,9 @@ namespace GroceryShopAPIConsume.Controllers
             //await LoadUserList();
             return RedirectToAction("UserDisplay");
         }
+        #endregion
+
+        #region AddUser
 
         public async Task<IActionResult> AddUser(int? UserID)
         {
@@ -102,5 +111,6 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View("AddUser", new UserModel());
         }
+        #endregion
     }
 }

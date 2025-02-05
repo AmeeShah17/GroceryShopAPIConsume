@@ -1,67 +1,86 @@
 ﻿@model GroceryShopAPIConsume.Models.BillModel
 
-<div class="card" style="margin-left:240px">
-    <div class="card-body">
-        <h5 class="card-title">User Form</h5>
-        <form method="post" asp-action="Save" asp-controller="Bill">
-            <div class="row mb-3">
-                <div class="col-sm-10">
-                    <input type="hidden" class="form-control" asp-for="BillID">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Bill Number</label>
-                <div class="col-sm-10">
+
+<head>
+       <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-container {
+            margin-top:30px;
+            margin-left:180px;
+            margin-bottom:30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .form-container h5 {
+                background: #007bff;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h5>Bill Form</h5>
+            <form method="post" asp-action="Save" asp-controller="Bill">
+                <input type="hidden" class="form-control" asp-for="BillID">
+
+                <div class="mb-3">
+                    <label class="form-label">Bill Number</label>
                     <input type="text" class="form-control" asp-for="BillNumber">
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Order ID</label>
-                <div class="col-sm-10">
-                    <select asp-for="OrderID" class="form-select" aria-label="Default select example">
-                        <option selected class="form-control">Open this select menu</option>
+
+                <div class="mb-3">
+                    <label class="form-label">Order ID</label>
+                    <select asp-for="OrderID" class="form-select">
+                        <option selected>Open this select menu</option>
                         @foreach (var order in ViewBag.orderList)
                         {
                             <option value="@order.OrderID">@order.OrderInfo</option>
                         }
                     </select>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Customer ID</label>
-                <div class="col-sm-10">
-                    <select asp-for="CustomerID" class="form-select" aria-label="Default select example">
-                        <option selected class="form-control">Open this select menu</option>
+
+                <div class="mb-3">
+                    <label class="form-label">Customer ID</label>
+                    <select asp-for="CustomerID" class="form-select">
+                        <option selected>Open this select menu</option>
                         @foreach (var customer in ViewBag.customerList)
                         {
                             <option value="@customer.CustomerID">@customer.CustomerName</option>
                         }
                     </select>
                 </div>
-            </div>
-           
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Total Amount</label>
-                <div class="col-sm-10">
+
+                <div class="mb-3">
+                    <label class="form-label">Total Amount</label>
                     <input type="text" class="form-control" asp-for="TotalAmount">
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Discount</label>
-                <div class="col-sm-10">
+
+                <div class="mb-3">
+                    <label class="form-label">Discount</label>
                     <input type="text" class="form-control" asp-for="Discount">
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Net Amount</label>
-                <div class="col-sm-10">
+
+                <div class="mb-3">
+                    <label class="form-label">Net Amount</label>
                     <input type="text" class="form-control" asp-for="NetAmount">
                 </div>
-            </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                @* <button type="reset" class="btn btn-secondary">Reset</button> *@
-            </div>
-        </form>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary w-50">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+</body>
+

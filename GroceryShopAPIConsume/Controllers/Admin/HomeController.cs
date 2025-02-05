@@ -2,7 +2,7 @@ using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class HomeController : Controller
     {

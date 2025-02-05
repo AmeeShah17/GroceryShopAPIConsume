@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class ProductController : Controller
     {
@@ -16,6 +16,7 @@ namespace GroceryShopAPIConsume.Controllers
             _client.BaseAddress = baseAddress; ;
         }
 
+        #region Display
         [HttpGet]
         public IActionResult ProductDisplay()
         {
@@ -31,6 +32,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View(product);
         }
+        #endregion
+
+        #region delete
 
         [HttpGet]
         public IActionResult Delete(int ProductID)
@@ -42,6 +46,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return RedirectToAction("ProductDisplay");
         }
+        #endregion
+
+        #region Save
 
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] ProductModel product)
@@ -83,7 +90,9 @@ namespace GroceryShopAPIConsume.Controllers
             await LoadSubCategoryList();
             return RedirectToAction("ProductDisplay");
         }
+        #endregion
 
+        #region AddProduct
         public async Task<IActionResult> AddProduct(int? ProductID)
         {
             await LoadSubCategoryList();
@@ -100,7 +109,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View("AddProduct", new ProductModel());
         }
+        #endregion
 
+        #region LoadSubCategeoryList
         private async Task LoadSubCategoryList()
         {
             var response = await _client.GetAsync($"{_client.BaseAddress}/Product/SubCategoryDropDown/SubCategory");
@@ -111,5 +122,6 @@ namespace GroceryShopAPIConsume.Controllers
                 ViewBag.subcategoryList = subcategory;
             }
         }
+        #endregion
     }
 }

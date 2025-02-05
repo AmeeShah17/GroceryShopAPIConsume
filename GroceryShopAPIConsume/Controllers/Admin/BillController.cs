@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class BillController : Controller
     {
@@ -15,6 +15,8 @@ namespace GroceryShopAPIConsume.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
         }
+
+        #region Display
 
         [HttpGet]
         public IActionResult BillDisplay()
@@ -31,6 +33,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View(bill);
         }
+        #endregion
+
+        #region Delete
 
         [HttpGet]
         public IActionResult Delete(int BillID)
@@ -42,6 +47,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return RedirectToAction("BillDisplay");
         }
+        #endregion
+
+        #region Save
 
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] BillModel bill)
@@ -84,6 +92,9 @@ namespace GroceryShopAPIConsume.Controllers
             await LoadCustomerist();
             return RedirectToAction("BillDisplay");
         }
+        #endregion
+
+        #region AddBill
 
         public async Task<IActionResult> AddBill(int? BillID)
         {
@@ -102,6 +113,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View("AddBill", new BillModel());
         }
+        #endregion
+
+        #region LoadOrderList
 
         private async Task LoadOrderist()
         {
@@ -113,6 +127,9 @@ namespace GroceryShopAPIConsume.Controllers
                 ViewBag.orderList = order;
             }
         }
+        #endregion
+
+        #region LoadCustomerList
 
         private async Task LoadCustomerist()
         {
@@ -122,7 +139,9 @@ namespace GroceryShopAPIConsume.Controllers
                 var data = await response.Content.ReadAsStringAsync();
                 var customer = JsonConvert.DeserializeObject<List<CustomerModel>>(data);
                 ViewBag.customerList = customer;
+
             }
         }
+        #endregion
     }
 }

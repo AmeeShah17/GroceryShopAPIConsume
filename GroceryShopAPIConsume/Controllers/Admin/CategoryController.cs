@@ -3,78 +3,89 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
-    public class CustomerController : Controller
+    public class CategoryController : Controller
     {
+
         Uri baseAddress = new Uri("https://localhost:7011/api");
         private readonly HttpClient _client;
 
-        public CustomerController()
+        public CategoryController()
         {
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
         }
+        #region Display
 
         [HttpGet]
-        public IActionResult CustomerDisplay()
+        public IActionResult CategoryDisplay()
         {
-            List<CustomerModel> customer = new List<CustomerModel>();
-            HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/Customer/GetAll").Result;
+            List<CategoryModel> category = new List<CategoryModel>();
+            HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/Category/GetAll").Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;     //convert json data to string 
                 dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(data);     //to sent data to cshtml file we need to deser
 
                 var extractedData = JsonConvert.SerializeObject(jsonobject, Formatting.Indented);
-                customer = JsonConvert.DeserializeObject<List<CustomerModel>>(extractedData);
+                category = JsonConvert.DeserializeObject<List<CategoryModel>>(extractedData);
             }
-            return View(customer);
+            return View(category);
         }
+        #endregion
+
+        #region delete
 
         [HttpGet]
-        public IActionResult Delete(int CustomerID)
+        public IActionResult Delete(int CategoryID)
         {
-            HttpResponseMessage response = _client.DeleteAsync($"{_client.BaseAddress}/Customer/Delete/{CustomerID}").Result;
+            HttpResponseMessage response = _client.DeleteAsync($"{_client.BaseAddress}/Category/Delete/{CategoryID}").Result;
             if (response.IsSuccessStatusCode)
             {
-                TempData["Message"] = "Customer Deleted";
+                TempData["Message"] = "Category Deleted";
             }
-            return RedirectToAction("CustomerDisplay");
+            return RedirectToAction("CategoryDisplay");
         }
+        #endregion
+
+        #region Save
 
 
         [HttpPost]
-        public async Task<IActionResult> Save([FromForm] CustomerModel customer)
+        public async Task<IActionResult> Save([FromForm] CategoryModel category)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var json = JsonConvert.SerializeObject(customer);
+                    var json = JsonConvert.SerializeObject(category);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response;
 
-                    if (customer.CustomerID == null || customer.CustomerID == 0)
+                    if (category.CateoryID == null || category.CateoryID == 0)
                     {
-                        response = await _client.PostAsync($"{_client.BaseAddress}/Customer/Add", content);
+                        response = await _client.PostAsync($"{_client.BaseAddress}/Category/Add", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Inserted Successfully";
-                            return RedirectToAction("CustomerDisplay");
+                            return RedirectToAction("CategoryDisplay");
                         }
                     }
 
                     else
                     {
-                        response = await _client.PutAsync($"{_client.BaseAddress}/Customer/Update/{customer.CustomerID}", content);
+                        response = await _client.PutAsync($"{_client.BaseAddress}/Category/Update/{category.CateoryID}", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Updated Successfully";
-                            return RedirectToAction("CustomerDisplay");
+                            return RedirectToAction("CategoryDisplay");
                         }
                     }
                 }
+
+                //if (response.IsSuccessStatusCode)
+                //    return RedirectToAction("ProductDisplay");
             }
             catch (Exception ex)
             {
@@ -82,24 +93,28 @@ namespace GroceryShopAPIConsume.Controllers
                 Console.WriteLine(TempData["ErrorMessage"]);
             }
             //await LoadUserList();
-            return RedirectToAction("CustomerDisplay");
+            return RedirectToAction("CategoryDisplay");
         }
+        #endregion
 
-        public async Task<IActionResult> AddCustomer(int? CustomerID)
+        #region AddCategory
+
+        public async Task<IActionResult> AddCategory(int? CategoryID)
         {
             //await LoadUserList();
-            if (CustomerID.HasValue)
+            if (CategoryID.HasValue)
             {
-                var response = await _client.GetAsync($"{_client.BaseAddress}/Customer/GetbyID/{CustomerID}");
+                var response = await _client.GetAsync($"{_client.BaseAddress}/Category/GetbyID/{CategoryID}");
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
-                    var customer = JsonConvert.DeserializeObject<CustomerModel>(data);
+                    var category = JsonConvert.DeserializeObject<CategoryModel>(data);
                     //ViewBag.userList = await GetStatesByCountryID(city.CountryID);
-                    return View(customer);
+                    return View(category);
                 }
             }
-            return View("AddCustomer", new CustomerModel());
+            return View("AddCategory", new CategoryModel());
         }
+        #endregion
     }
 }

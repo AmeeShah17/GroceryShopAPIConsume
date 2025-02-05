@@ -34,10 +34,10 @@
                 <tr>
                     <th>Sub Category ID</th>
                     <th>Sub Category Name</th>
-                    <th>Category ID</th>
+                    
                     <th>Category Name</th>
-                    <th>Created</th>
-                    <th>Modified</th>
+                    @* <th>Created</th>
+                    <th>Modified</th> *@
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
@@ -48,10 +48,10 @@
                     <tr>
                         <td>@items.SubCategoryID</td>
                         <td>@items.SubCategoryName</td>
-                        <td>@items.CategoryID</td>
+                       
                         <td><span class="badge bg-secondary">@items.CategoryName</span></td>
-                        <td>@items.Created</td>
-                        <td>@items.Modified</td>
+                        @* <td>@items.Created</td>
+                        <td>@items.Modified</td> *@
                         <td>
                             <a href="@Url.Action("AddSubCategory","SubCategory",new {SubCategoryID=items.SubCategoryID})">
                                 <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>

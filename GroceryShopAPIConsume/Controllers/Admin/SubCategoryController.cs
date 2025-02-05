@@ -4,7 +4,7 @@ using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class SubCategoryController : Controller
     {
@@ -17,6 +17,7 @@ namespace GroceryShopAPIConsume.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
         }
+        #region Display
 
         [HttpGet]
         public IActionResult SubCategoryDisplay()
@@ -33,6 +34,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View(subcategory);
         }
+        #endregion
+
+        #region Delete
 
         [HttpGet]
         public IActionResult Delete(int SubCategoryID)
@@ -44,10 +48,13 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return RedirectToAction("SubCategoryDisplay");
         }
+        #endregion
+
+        #region Save
 
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] SubCategoryModel subcategory)
-        { 
+        {
             try
             {
                 if (ModelState.IsValid)
@@ -85,6 +92,9 @@ namespace GroceryShopAPIConsume.Controllers
             await LoadCategoryist();
             return RedirectToAction("SubCategoryDisplay");
         }
+        #endregion
+
+        #region AddSubCategory
 
         public async Task<IActionResult> AddSubCategory(int? SubCategoryID)
         {
@@ -102,7 +112,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View("AddSubCategory", new SubCategoryModel());
         }
+        #endregion
 
+        #region LoadCategoryList
         private async Task LoadCategoryist()
         {
             var response = await _client.GetAsync($"{_client.BaseAddress}/SubCategory/CategoryDropDown/Category");
@@ -113,5 +125,6 @@ namespace GroceryShopAPIConsume.Controllers
                 ViewBag.categoryList = category;
             }
         }
+        #endregion
     }
 }

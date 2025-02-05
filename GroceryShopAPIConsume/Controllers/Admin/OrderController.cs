@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace GroceryShopAPIConsume.Controllers
+namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class OrderController : Controller
     {
@@ -15,7 +15,7 @@ namespace GroceryShopAPIConsume.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
         }
-
+        #region Display
         [HttpGet]
         public IActionResult OrderDisplay()
         {
@@ -31,6 +31,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View(order);
         }
+        #endregion
+
+        #region Delete
 
         [HttpGet]
         public IActionResult Delete(int OrderID)
@@ -42,7 +45,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return RedirectToAction("OrderDisplay");
         }
+        #endregion
 
+        #region Save
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] OrderModel order)
         {
@@ -83,7 +88,9 @@ namespace GroceryShopAPIConsume.Controllers
             await LoadCustomerList();
             return RedirectToAction("OrderDisplay");
         }
+        #endregion
 
+        #region AddOrder
         public async Task<IActionResult> AddOrder(int? OrderID)
         {
             await LoadCustomerList();
@@ -100,7 +107,9 @@ namespace GroceryShopAPIConsume.Controllers
             }
             return View("AddOrder", new OrderModel());
         }
+        #endregion
 
+        #region LoadCustomerList
         private async Task LoadCustomerList()
         {
             var response = await _client.GetAsync($"{_client.BaseAddress}/Order/CustomerDropDown/Customer");
@@ -111,5 +120,6 @@ namespace GroceryShopAPIConsume.Controllers
                 ViewBag.customerList = customer;
             }
         }
+        #endregion
     }
 }
