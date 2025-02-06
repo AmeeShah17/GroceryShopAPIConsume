@@ -82,7 +82,7 @@
         <div class="offcanvas-header justify-content-center">
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body">
+        @* <div class="offcanvas-body">
             <div class="order-md-last">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-primary">Your cart</span>
@@ -118,7 +118,7 @@
 
                 <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
             </div>
-        </div>
+        </div> *@
     </div>
 
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasSearch" aria-labelledby="Search">
@@ -202,8 +202,13 @@
 
                     <div class="cart text-end d-none d-lg-block dropdown">
                         <button class="border-0 bg-transparent d-flex flex-column gap-2 lh-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
-                            <span class="fs-6 text-muted dropdown-toggle">Your Cart</span>
-                            <span class="cart-total fs-5 fw-bold">$1290.00</span>
+                            <span class="fs-6 text-muted dropdown-toggle">
+                                <a asp-action="UserCartDisplay" asp-controller="UserCart">
+                                    Your Cart
+                                </a>
+                            
+                           </span>
+                            
                         </button>
                     </div>
                 </div>
