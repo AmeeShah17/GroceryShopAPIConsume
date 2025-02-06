@@ -1,6 +1,8 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
+using System.Net.Http;
 using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers.Admin
@@ -18,20 +20,33 @@ namespace GroceryShopAPIConsume.Controllers.Admin
 
         #region Display
         [HttpGet]
-        public IActionResult ProductDisplay()
+        public async Task<IActionResult> ProductDisplay()
         {
-            List<ProductModel> product = new List<ProductModel>();
-            HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/Product/GetAll").Result;
+            List<ProductModel> products = new List<ProductModel>();
+
+            // Fetch product list
+            var response = await _client.GetAsync($"{_client.BaseAddress}/Product/GetAll");
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;     //convert json data to string 
-                dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(data);     //to sent data to cshtml file we need to deser
-
-                var extractedData = JsonConvert.SerializeObject(jsonobject, Formatting.Indented);
-                product = JsonConvert.DeserializeObject<List<ProductModel>>(extractedData);
+                var data = await response.Content.ReadAsStringAsync();
+                products = JsonConvert.DeserializeObject<List<ProductModel>>(data);
             }
-            return View(product);
+
+            // Fetch subcategory list
+            var subCategoryResponse = await _client.GetAsync($"{_client.BaseAddress}/Product/SubCategoryDropDown/SubCategory");
+            if (subCategoryResponse.IsSuccessStatusCode)
+            {
+                var subCategoryData = await subCategoryResponse.Content.ReadAsStringAsync();
+                ViewBag.SubCategories = JsonConvert.DeserializeObject<List<SubCategoryModel>>(subCategoryData);
+            }
+            else
+            {
+                ViewBag.SubCategories = new List<SubCategoryModel>(); // Ensure ViewBag is not null
+            }
+
+            return View(products);
         }
+
         #endregion
 
         #region delete
@@ -88,6 +103,7 @@ namespace GroceryShopAPIConsume.Controllers.Admin
                 Console.WriteLine(TempData["ErrorMessage"]);
             }
             await LoadSubCategoryList();
+            
             return RedirectToAction("ProductDisplay");
         }
         #endregion
@@ -96,6 +112,7 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         public async Task<IActionResult> AddProduct(int? ProductID)
         {
             await LoadSubCategoryList();
+            
             if (ProductID.HasValue)
             {
                 var response = await _client.GetAsync($"{_client.BaseAddress}/Product/GetbyID/{ProductID}");
@@ -103,7 +120,7 @@ namespace GroceryShopAPIConsume.Controllers.Admin
                 {
                     var data = await response.Content.ReadAsStringAsync();
                     var product = JsonConvert.DeserializeObject<ProductModel>(data);
-                    //ViewBag.customerList = await GetStatesByCountryID(city.CountryID);
+                    ViewBag.SubCategories = await GetProductBySubCategoryID(product.SubCategoryID);
                     return View(product);
                 }
             }
@@ -123,5 +140,23 @@ namespace GroceryShopAPIConsume.Controllers.Admin
             }
         }
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetProductBySubCategory(int SubCategoryID)
+        {
+            var states = await GetProductBySubCategoryID(SubCategoryID);
+            return Json(states);
+        }
+
+        private async Task<List<ProductModel>> GetProductBySubCategoryID(int SubCategoryID)
+        {
+            var response = await _client.GetAsync($"{_client.BaseAddress}/Product/GetProductsBySubCategory/Product/{SubCategoryID}");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<ProductModel>>(data);
+            }
+            return new List<ProductModel>();
+        }
     }
 }

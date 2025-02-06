@@ -8,6 +8,8 @@
     <title>Styled Table</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,34 +30,46 @@
             border-radius: 8px;
         }
 
-        .email-link {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-            .email-link:hover {
-                text-decoration: underline;
-            }
-
-        .file-upload-icon {
-            font-size: 20px;
-            color: #6c63ff;
-            cursor: pointer;
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            margin-left: 130px;
         }
     </style>
 </head>
 <body>
-    
+
     <div class="container table-container">
-        <h3 style="margin-left:130px">Category Table</h3>
-        <a asp-controller="Product" asp-action="AddProduct">
-            <button style="margin-left:130px;margin-bottom:10px;" class="btn btn-primary">Add Data</button>
-        </a>
+        <h3 style="margin-left:130px">Product Table</h3>
+
+        <!-- Dropdown for Filtering -->
+        <div class="filter-section">
+            <select id="subcategoryDropdown" class="form-select" style="width: 250px;">
+                <option value="0">All Categories</option>
+                @if (ViewBag.SubCategories != null)
+                {
+                    @foreach (var subCategory in ViewBag.SubCategories)
+                    {
+                        <option value="@subCategory.SubCategoryID">@subCategory.SubCategoryName</option>
+                    }
+                }
+                else
+                {
+                    <option value="0">No Categories Available</option>
+                }
+            </select>
+
+            <a asp-controller="Product" asp-action="AddProduct">
+                <button class="btn btn-primary">Add Data</button>
+            </a>
+        </div>
+
+        <!-- Products Table -->
         <table class="table table-hover align-middle table-bordered" style="margin-left:120px">
             <thead>
                 <tr>
-                    
                     <th>Product ID</th>
                     <th>Product Image</th>
                     <th>Product Name</th>
@@ -70,7 +84,7 @@
                     <th>Delete</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="productTableBody">
                 @foreach (var items in Model)
                 {
                     <tr>
@@ -88,7 +102,6 @@
                         </td>
                         <td>@items.Created</td>
                         <td>@items.Modified</td>
-
                         <td>
                             <a href="@Url.Action("AddProduct","Product",new {ProductID=items.ProductID})">
                                 <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
@@ -101,9 +114,59 @@
                         </td>
                     </tr>
                 }
-                
             </tbody>
         </table>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#subcategoryDropdown").change(function () {
+                var subCategoryId = $(this).val();
+
+                if (subCategoryId) {
+                    $.ajax({
+                        url: "https://localhost:7011/api/Product/GetProductsBySubCategory/" + subCategoryId,
+                        type: "GET",
+                        contentType: "application/json",
+
+                        success: function (data) {
+                            console.log("Received Data:", data);
+                            var tableBody = $("#productTableBody"); // Ensure correct tbody selection
+                            tableBody.empty(); // Clear existing table rows
+
+                            if (data.length === 0) {
+                                tableBody.append("<tr><td colspan='12' class='text-center'>No products found</td></tr>");
+                            } else {
+                                $.each(data, function (index, product) {
+                                    var row = "<tr>" +
+                                        "<td>" + product.productID + "</td>" +
+                                        "<td><img src='" + product.productImage + "' height='100' width='100' class='rounded'/></td>" +
+                                        "<td>" + product.productName + "</td>" +
+                                        "<td>" + product.productPrice + "</td>" +
+                                        "<td>" + product.productCode + "</td>" +
+                                        "<td>" + product.description + "</td>" +
+                                        "<td>" + product.subCategoryID + "</td>" +
+                                        "<td><span class='badge bg-secondary'>" + product.subCategoryName + "</span></td>" +
+                                        "<td>" + product.created + "</td>" +
+                                        "<td>" + product.modified + "</td>" +
+                                        "<td><a href='/Product/AddProduct?ProductID=" + product.productID + "'><button class='btn btn-primary'><i class='bi bi-pencil'></i></button></a></td>" +
+                                        "<td><a href='/Product/Delete?ProductID=" + product.productID + "'><button class='btn btn-danger'><i class='bi bi-trash'></i></button></a></td>" +
+                                        "</tr>";
+
+                                    tableBody.append(row);
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("AJAX Error: " + error);
+                        }
+                    });
+                }
+            });
+        });
+
+
+
+    </script>
 </body>
 </html>
