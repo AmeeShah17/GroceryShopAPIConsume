@@ -1,0 +1,241 @@
+﻿@model ProductModel
+@{
+    Layout = "_UserLayout";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .product-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image img {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    .product-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .product-price {
+        font-size: 26px;
+        font-weight: bold;
+        color: #28a745;
+        margin: 10px 0;
+    }
+
+    .rating {
+        color: gold;
+        font-size: 18px;
+    }
+
+    .product-description {
+        color: #666;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .btn-custom {
+        background-color: #ffcc00;
+        border: none;
+        color: #000;
+        font-size: 16px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+        .btn-custom:hover {
+            background-color: #ffb300;
+        }
+
+    .wishlist-btn {
+        background: none;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+        .wishlist-btn:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+    .social-icons a {
+        color: #555;
+        font-size: 20px;
+        margin-right: 10px;
+        transition: 0.3s;
+    }
+
+        .social-icons a:hover {
+            color: #000;
+        }
+</style>
+
+<body>
+
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="product-image">
+                    <img src="@Model.ProductImage" alt="Product Image">
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="product-container">
+                    <h2 class="product-title">@Model.ProductName</h2>
+                    <p class="rating">
+                        ★★★★☆ (22 user reviews)
+                    </p>
+                    <p class="product-price">Rs. @Model.ProductPrice</p>
+                    <p class="product-description">
+                        @Model.Description
+                    </p>
+                    <div class="d-flex gap-3">
+                        @* <a class="nav-link add-to-cart-btn" data-id="@Model.ProductID" data-name="@Model.ProductName" data-price="@Model.ProductPrice" data-image="@Model.ProductImage">
+                            <iconify-icon icon="uil:shopping-cart"></iconify-icon>
+                        </a> *@
+
+                        <a href="#" class="nav-link add-to-cart-btn btn btn-custom" data-id="@Model.ProductID" data-name="@Model.ProductName" data-price="@Model.ProductPrice" data-image="@Model.ProductImage" data-quantity="1">
+                            Add to Cart<iconify-icon icon="uil:shopping-cart"></iconify-icon>
+                        </a>
+                        <a href="#" class="btn wishlist-btn wishlist-btn" data-id="@Model.ProductID"
+                           data-name="@Model.ProductName"
+                           data-price="@Model.ProductPrice"
+                           data-image="@Model.ProductImage">
+                            <i class="fa-regular fa-heart"></i>
+                        </a>
+                    </div>
+                    <hr>
+                    <p><strong>Category:@Model.SubCategoryName</strong></p>
+                    <p><strong>Code:</strong>@Model.ProductCode</p>
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".add-to-cart-btn").click(function (e) {
+            e.preventDefault();
+
+            var productId = $(this).data("id");
+            var productName = $(this).data("name");
+            var productPrice = parseFloat($(this).data("price"));
+            var productImage = $(this).data("image");
+            var quantity = $(this).data("quantity") || 1;
+
+            var cart = localStorage.getItem("cart");
+            cart = cart ? JSON.parse(cart) : [];
+
+            var existingProduct = cart.find(item => item.id === productId);
+
+            if (existingProduct) {
+                existingProduct.quantity += quantity;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: quantity,
+                    image: productImage
+                });
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Product added to cart successfully!");
+        });
+
+        $(".quantity-left-minus").click(function () {
+            var input = $(this).closest(".product-qty").find(".product-quantity");
+            var value = parseInt(input.val());
+            if (value > 1) {
+                input.val(value - 1);
+            }
+        });
+
+        $(".quantity-right-plus").click(function () {
+            var input = $(this).closest(".product-qty").find(".product-quantity");
+            var value = parseInt(input.val());
+            input.val(value + 1);
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        loadWishlist();
+
+        $(".wishlist-btn").click(function (e) {
+            e.preventDefault();
+
+            var id = $(this).data("id");
+            var name = $(this).data("name");
+            var price = $(this).data("price");
+            var image = $(this).data("image");
+
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            var existingItem = wishlist.find(item => item.id === id);
+
+            if (existingItem) {
+                // Remove from wishlist if it already exists
+                wishlist = wishlist.filter(item => item.id !== id);
+                $(this).find("svg").removeClass("active");
+            } else {
+                // Add to wishlist
+                wishlist.push({ id, name, price, image });
+                $(this).find("svg").addClass("active");
+            }
+
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            loadWishlist();
+        });
+
+        function loadWishlist() {
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+            $(".wishlist-btn").each(function () {
+                var id = $(this).data("id");
+                var isInWishlist = wishlist.some(item => item.id === id);
+                if (isInWishlist) {
+                    $(this).find("svg").addClass("active");
+                } else {
+                    $(this).find("svg").removeClass("active");
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .wishlist-icon {
+        fill: gray;
+        transition: fill 0.3s ease-in-out;
+    }
+
+        .wishlist-icon.active {
+            fill: red;
+        }
+</style>
+

@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "_UserLayout";
+}
+
+
+<section class="py-5">
+    <div class="container">
+        <h3>❤️ Your Wishlist</h3>
+        <div class="row" id="wishlistItems"></div>
+    </div>
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        loadWishlist();
+
+        function loadWishlist() {
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            var wishlistContainer = $("#wishlistItems");
+            wishlistContainer.empty();
+
+            if (wishlist.length === 0) {
+                wishlistContainer.append("<p class='text-center'>No items in wishlist</p>");
+                return;
+            }
+
+            wishlist.forEach(function (item) {
+                var productHTML = `
+                        <div class="col-md-3">
+                            <div class="product-item">
+                                <figure>
+                                    <img src="${item.image}" class="tab-image">
+                                </figure>
+                                <h3>${item.name}</h3>
+                                <span class="price">Rs. ${item.price}</span>
+                                <button class="btn btn-danger remove-wishlist-btn" data-id="${item.id}">Remove</button>
+                            </div>
+                        </div>`;
+                wishlistContainer.append(productHTML);
+            });
+        }
+
+        $(document).on("click", ".remove-wishlist-btn", function () {
+            var id = $(this).data("id");
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            wishlist = wishlist.filter(item => item.id !== id);
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            loadWishlist();
+        });
+    });
+</script>

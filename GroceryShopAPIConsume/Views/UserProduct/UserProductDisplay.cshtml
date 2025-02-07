@@ -26,13 +26,17 @@
                                 {
                                     <div class="col">
                                         <div class="product-item">
-                                            <a href="#" class="btn-wishlist">
-                                                <svg width="24" height="24"><use xlink:href="#heart"></use></svg>
+                                            <a href="#" class="btn-wishlist wishlist-btn" data-id="@item.ProductID"
+                                               data-name="@item.ProductName"
+                                               data-price="@item.ProductPrice"
+                                               data-image="@item.ProductImage">
+                                                <svg width="24" height="24" class="wishlist-icon"><use xlink:href="#heart"></use></svg>
                                             </a>
                                             <figure>
-                                                <a href="#" title="@item.ProductName">
+                                                <a title="@item.ProductName" asp-action="ProductByID" asp-controller="ProductDetail" asp-route-ProductID="@item.ProductID">
                                                     <img src="@item.ProductImage" class="tab-image">
                                                 </a>
+
                                             </figure>
                                             <h3>@item.ProductName</h3>
                                             <span class="qty">1 Unit</span>
@@ -41,7 +45,7 @@
                                                     <use xlink:href="#star-solid"></use>
                                                 </svg> 4.5
                                             </span>
-                                            <span class="price">$@item.ProductPrice</span>
+                                            <span class="price">Rs. @item.ProductPrice </span>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <div class="input-group product-qty">
                                                     <span class="input-group-btn">
@@ -121,3 +125,60 @@
         });
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        loadWishlist();
+
+        $(".wishlist-btn").click(function (e) {
+            e.preventDefault();
+
+            var id = $(this).data("id");
+            var name = $(this).data("name");
+            var price = $(this).data("price");
+            var image = $(this).data("image");
+
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            var existingItem = wishlist.find(item => item.id === id);
+
+            if (existingItem) {
+                // Remove from wishlist if it already exists
+                wishlist = wishlist.filter(item => item.id !== id);
+                $(this).find("svg").removeClass("active");
+            } else {
+                // Add to wishlist
+                wishlist.push({ id, name, price, image });
+                $(this).find("svg").addClass("active");
+            }
+
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            loadWishlist();
+        });
+
+        function loadWishlist() {
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+            $(".wishlist-btn").each(function () {
+                var id = $(this).data("id");
+                var isInWishlist = wishlist.some(item => item.id === id);
+                if (isInWishlist) {
+                    $(this).find("svg").addClass("active");
+                } else {
+                    $(this).find("svg").removeClass("active");
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .wishlist-icon {
+        fill: gray;
+        transition: fill 0.3s ease-in-out;
+    }
+
+        .wishlist-icon.active {
+            fill: red;
+        }
+</style>
+

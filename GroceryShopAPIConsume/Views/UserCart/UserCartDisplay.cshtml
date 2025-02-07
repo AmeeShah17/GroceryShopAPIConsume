@@ -119,7 +119,7 @@
             <tbody id="cartItems"></tbody>
         </table>
 
-        <div class="total-price">Total Price: <span id="totalPrice">$0.00</span></div>
+        <div class="total-price">Total Price: <span id="totalPrice">0.00 Rs.</span></div>
 
         <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
     </div>
@@ -139,7 +139,7 @@
 
                     if (cart.length === 0) {
                         cartTable.append("<tr><td colspan='6' class='text-center'>No items in cart</td></tr>");
-                        $("#totalPrice").text("$0.00");
+                        $("#totalPrice").text("0.00 Rs.");
                         return;
                     }
 
@@ -150,20 +150,20 @@
                         var row = "<tr>" +
                             "<td><img src='" + item.image + "'/></td>" +
                             "<td>" + item.name + "</td>" +
-                            "<td>$" + item.price.toFixed(2) + "</td>" +
+                            "<td>Rs. " + item.price.toFixed(2) + "</td>" +
                             "<td class='quantity-control'>" +
                             "<button class='btn-decrease' data-index='" + index + "'>-</button>" +
                             "<span>" + item.quantity + "</span>" +
                             "<button class='btn-increase' data-index='" + index + "'>+</button>" +
                             "</td>" +
-                            "<td>$" + itemTotal.toFixed(2) + "</td>" +
+                            "<td>Rs. " + itemTotal.toFixed(2) + "</td>" +
                             "<td><button class='btn-remove' data-index='" + index + "'>X</button></td>" +
                             "</tr>";
 
                         cartTable.append(row);
                     });
 
-                    $("#totalPrice").text("$" + totalPrice.toFixed(2));
+                    $("#totalPrice").text("Rs." + totalPrice.toFixed(2));
                 } else {
                     cartTable.append("<tr><td colspan='6' class='text-center'>No items in cart</td></tr>");
                 }

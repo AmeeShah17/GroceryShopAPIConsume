@@ -4,6 +4,8 @@
     {
         public int? SubCategoryID { get; set; }
         public string SubCategoryName { get; set; }
+
+        public string SubCategoryImage { get; set; }
         public int CategoryID { get; set; }
         public string? CategoryName { get; set; }
         public DateTime? Created { get; set; }

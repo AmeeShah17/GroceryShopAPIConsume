@@ -33,6 +33,7 @@
             <thead>
                 <tr>
                     <th>Sub Category ID</th>
+                    <th>Sub Category Image</th>
                     <th>Sub Category Name</th>
                     
                     <th>Category Name</th>
@@ -47,8 +48,9 @@
                 {
                     <tr>
                         <td>@items.SubCategoryID</td>
+                        <td><img src="@items.SubCategoryImage" height="100px" width="100px"></td>
                         <td>@items.SubCategoryName</td>
-                       
+                        
                         <td><span class="badge bg-secondary">@items.CategoryName</span></td>
                         @* <td>@items.Created</td>
                         <td>@items.Modified</td> *@
