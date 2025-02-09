@@ -1,25 +1,48 @@
 ﻿@model GroceryShopAPIConsume.Models.CategoryModel
 
-<div class="card" style="margin-left:200px">
-    <div class="card-body">
-        <h5 class="card-title">Category Form</h5>
-        <form method="post" asp-action="Save" asp-controller="Category">
-            <div class="row mb-3">
-                <div class="col-sm-10">
-                    <input type="hidden" class="form-control" asp-for="CateoryID">
+<head>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-container {
+            margin-top: 30px;
+            margin-left: 180px;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .form-container h5 {
+                background: #007bff;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h5>Category Form</h5>
+
+            <form method="post" asp-action="Save" asp-controller="Category">
+                <input type="hidden" class="form-control" asp-for="CateoryID">
+
+                <div class="mb-3">
+                    <label class="col-form-label">Category Name</label>
+                    <input type="text" class="form-control" asp-for="CategoryName">
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Category Name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control"asp-for="CategoryName">
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-            </div>
-            
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                @* <button type="reset" class="btn btn-secondary">Reset</button> *@
-            </div>
-        </form>
+            </form>
         </div>
-        </div>
+    </div>
+</body>

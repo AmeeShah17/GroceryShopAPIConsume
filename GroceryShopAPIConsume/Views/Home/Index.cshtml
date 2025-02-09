@@ -1,112 +1,132 @@
-﻿@{
+﻿@model GroceryShopAPIConsume.Models.DashboardModel
+@{
     ViewData["Title"] = "Home Page";
 }
+
+<style>
+    .card {
+        transition: transform 0.3s ease-in-out;
+        border: none;
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+    .icon-box {
+        position: absolute;
+        right: 15px;
+        bottom: 15px;
+        font-size: 3rem;
+        opacity: 0.3;
+    }
+
+</style>
 
 <div class="content-body">
 
     <div class="container-fluid mt-3">
         <div class="row">
+            @* Total Category *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-1">
-                    <div class="card-body">
+                <div class="card gradient-1 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
                         <h3 class="card-title text-white">Total Category</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">4565</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-shopping-cart"></i></span>
+                        <h2 class="text-white">@Model.TotalCategories</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-shopping-cart"></i></span>
                     </div>
                 </div>
             </div>
+
+            @* Total Sub Category *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-2">
-                    <div class="card-body">
+                <div class="card gradient-2 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
                         <h3 class="card-title text-white">Total Sub Category</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">$ 8541</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-money"></i></span>
+                        <h2 class="text-white">@Model.TotalSubCategories</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-money"></i></span>
                     </div>
                 </div>
             </div>
+
+            @* Total Products *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-3">
-                    <div class="card-body">
+                <div class="card gradient-3 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
                         <h3 class="card-title text-white">Total Products</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">4565</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
+                        <h2 class="text-white">@Model.TotalProducts</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-box"></i></span>
                     </div>
                 </div>
             </div>
+
+            @* Total Customers *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-4">
-                    <div class="card-body">
+                <div class="card gradient-4 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
                         <h3 class="card-title text-white">Total Customers</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">99%</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-heart"></i></span>
+                        <h2 class="text-white">@Model.TotalCustomers</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-users"></i></span>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <div class="row">
+        <div class="row mt-4">
+            @* Total Users *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-1">
-                    <div class="card-body">
+                <div class="card gradient-1 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
                         <h3 class="card-title text-white">Total Users</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">4565</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-shopping-cart"></i></span>
+                        <h2 class="text-white">@Model.TotalUsers</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-user"></i></span>
                     </div>
                 </div>
             </div>
+
+            @* Total Orders *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-2">
-                    <div class="card-body">
+                <div class="card gradient-2 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
                         <h3 class="card-title text-white">Total Orders</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">$ 8541</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-money"></i></span>
+                        <h2 class="text-white">@Model.TotalOrders</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-shopping-bag"></i></span>
                     </div>
                 </div>
             </div>
+
+            @* Top Order (Table) *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-3">
+                <div class="card gradient-3 shadow-lg rounded-lg">
                     <div class="card-body">
-                        <h3 class="card-title text-white">Order Details</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">4565</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
+                        <h3 class="card-title text-white text-center">Top Orders</h3>
+                        <h2 class="text-white">@Model.TopOrders.Count()</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-trophy"></i></span>
                     </div>
                 </div>
             </div>
+
+            @* Bill Details *@
             <div class="col-lg-3 col-sm-6">
-                <div class="card gradient-4">
-                    <div class="card-body">
-                        <h3 class="card-title text-white">Bill Details</h3>
-                        <div class="d-inline-block">
-                            <h2 class="text-white">99%</h2>
-                            <p class="text-white mb-0">Jan - March 2019</p>
-                        </div>
-                        <span class="float-right display-5 opacity-5"><i class="fa fa-heart"></i></span>
+                <div class="card gradient-4 shadow-lg rounded-lg">
+                    <div class="card-body text-center">
+                        <h3 class="card-title text-white">Top Customers</h3>
+                        <h2 class="text-white">@Model.TopCustomers.Count()</h2>
+                        <p class="text-white mb-0">Jan - March 2019</p>
+                        <span class="icon-box"><i class="fa fa-file-invoice-dollar"></i></span>
                     </div>
                 </div>
             </div>
         </div>
+
+
 
         <div class="row">
             <div class="col-lg-12">

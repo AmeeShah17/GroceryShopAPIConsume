@@ -200,22 +200,21 @@
                         </li>
                     </ul>
 
-                    <div class="cart text-end d-none d-lg-block dropdown">
-                        <button class="border-0 bg-transparent d-flex flex-column gap-2 lh-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
-                            <span class="fs-6 text-muted dropdown-toggle">
-                                <a asp-action="UserCartDisplay" asp-controller="UserCart">
-                                    Your Cart
+                    <div class="cart text-end d-none d-lg-block">
+                        <button class="border-0 bg-transparent d-flex flex-column gap-2 lh-1" type="button" >
+                            <span class="fs-6 text-muted ">
+                                <a asp-action="UserCartDisplay" asp-controller="UserCart" class="text-decoration-none">
+                                    <i class="fas fa-shopping-cart fs-4 "></i>
                                 </a>
-                            
-                           </span>
-                            
+                            </span>
                         </button>
                     </div>
+
                 </div>
 
             </div>
         </div>
-        <div class="container-fluid">
+        @* <div class="container-fluid">
             <div class="row py-3">
                 <div class="d-flex  justify-content-center justify-content-sm-between align-items-center">
                     <nav class="main-menu d-flex navbar navbar-expand-lg">
@@ -286,7 +285,7 @@
                         </div>
                 </div>
             </div>
-        </div>
+        </div> *@
     </header>
     <div>
         <main role="main" id="main" class="pb-3 mains">

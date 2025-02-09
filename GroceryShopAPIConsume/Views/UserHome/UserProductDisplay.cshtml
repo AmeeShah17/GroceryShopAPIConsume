@@ -1,0 +1,179 @@
+﻿@model IEnumerable<GroceryShopAPIConsume.Models.ProductModel>
+
+@{
+    Layout = "_UserLayout";
+}
+
+<section class="py-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="bootstrap-tabs product-tabs">
+                    <div class="tabs-header d-flex justify-content-between border-bottom my-5">
+                        <h3>Products</h3>
+                        
+                    </div>
+
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+                            <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                                @foreach (var item in Model)
+                                {
+                                    <div class="col">
+                                        <div class="product-item">
+                                            <a href="#" class="btn-wishlist wishlist-btn" data-id="@item.ProductID"
+                                               data-name="@item.ProductName"
+                                               data-price="@item.ProductPrice"
+                                               data-image="@item.ProductImage">
+                                                <svg width="24" height="24" class="wishlist-icon"><use xlink:href="#heart"></use></svg>
+                                            </a>
+                                            <figure>
+                                                <a title="@item.ProductName" asp-action="ProductByID" asp-controller="ProductDetail" asp-route-ProductID="@item.ProductID">
+                                                    <img src="@item.ProductImage" class="tab-image">
+                                                </a>
+
+                                            </figure>
+                                            <h3>@item.ProductName</h3>
+                                            <span class="qty">1 Unit</span>
+                                            <span class="rating">
+                                                <svg width="24" height="24" class="text-primary">
+                                                    <use xlink:href="#star-solid"></use>
+                                                </svg> 4.5
+                                            </span>
+                                            <span class="price">Rs. @item.ProductPrice </span>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="input-group product-qty">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
+                                                            <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                                                        </button>
+                                                    </span>
+                                                    <input type="text" class="form-control input-number product-quantity" value="1" data-id="@item.ProductID">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
+                                                            <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                                <a href="#" class="nav-link add-to-cart-btn" data-id="@item.ProductID" data-name="@item.ProductName" data-price="@item.ProductPrice" data-image="@item.ProductImage">
+                                                    Add to Cart <iconify-icon icon="uil:shopping-cart"></iconify-icon>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".add-to-cart-btn").click(function (e) {
+            e.preventDefault();
+
+            var productId = $(this).data("id");
+            var productName = $(this).data("name");
+            var productPrice = parseFloat($(this).data("price"));
+            var productImage = $(this).data("image");
+            var quantity = parseInt($(this).closest(".product-item").find(".product-quantity").val());
+
+            var cart = localStorage.getItem("cart");
+            cart = cart ? JSON.parse(cart) : [];
+
+            var existingProduct = cart.find(item => item.id === productId);
+
+            if (existingProduct) {
+                existingProduct.quantity += quantity;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: quantity,
+                    image: productImage
+                });
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Product added to cart successfully!");
+        });
+
+        $(".quantity-left-minus").click(function () {
+            var input = $(this).closest(".product-qty").find(".product-quantity");
+            var value = parseInt(input.val());
+            if (value > 1) {
+                input.val(value - 1);
+            }
+        });
+
+        $(".quantity-right-plus").click(function () {
+            var input = $(this).closest(".product-qty").find(".product-quantity");
+            var value = parseInt(input.val());
+            input.val(value + 1);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        loadWishlist();
+
+        $(".wishlist-btn").click(function (e) {
+            e.preventDefault();
+
+            var id = $(this).data("id");
+            var name = $(this).data("name");
+            var price = $(this).data("price");
+            var image = $(this).data("image");
+
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            var existingItem = wishlist.find(item => item.id === id);
+
+            if (existingItem) {
+                // Remove from wishlist if it already exists
+                wishlist = wishlist.filter(item => item.id !== id);
+                $(this).find("svg").removeClass("active");
+            } else {
+                // Add to wishlist
+                wishlist.push({ id, name, price, image });
+                $(this).find("svg").addClass("active");
+            }
+
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            loadWishlist();
+        });
+
+        function loadWishlist() {
+            var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+            $(".wishlist-btn").each(function () {
+                var id = $(this).data("id");
+                var isInWishlist = wishlist.some(item => item.id === id);
+                if (isInWishlist) {
+                    $(this).find("svg").addClass("active");
+                } else {
+                    $(this).find("svg").removeClass("active");
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .wishlist-icon {
+        fill: gray;
+        transition: fill 0.3s ease-in-out;
+    }
+
+        .wishlist-icon.active {
+            fill: red;
+        }
+</style>
+
