@@ -1,6 +1,7 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers.Admin
@@ -111,5 +112,78 @@ namespace GroceryShopAPIConsume.Controllers.Admin
             return View("AddCustomer", new CustomerModel());
         }
         #endregion
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(CustomerLoginModel loginModel)
+        {
+            if (!ModelState.IsValid)
+                return View(loginModel);
+
+            var jsonData = JsonConvert.SerializeObject(loginModel);
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync($"{_client.BaseAddress}/Customer/Login", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<dynamic>(responseData);
+
+                string token = result.token;
+
+                HttpContext.Session.SetString("JWTToken", token);  // Store token in session
+
+                return RedirectToAction("Index", "UserHome");  // Redirect to dashboard
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Invalid Username or Password!";
+                return View();
+            }
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(CustomerRegisterModel registerModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Invalid Registration Data!";
+                return View(registerModel);
+            }
+
+            var jsonData = JsonConvert.SerializeObject(registerModel);
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync($"{_client.BaseAddress}/Customer/Register", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Login","Customer");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Registration Failed!";
+                return View();
+            }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("JWTToken");  // Remove token
+            return RedirectToAction("Login","Customer");
+        }
+
+        
+
     }
 }

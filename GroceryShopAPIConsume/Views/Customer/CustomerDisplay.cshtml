@@ -37,7 +37,7 @@
                     <th>Email</th>
                     <th>Password</th>
                     <th>City</th>
-                    <th>Is Active</th>
+                 
                     <th>Phone no.</th>
                     <th>Address</th>
                     <th>PinCode</th>
@@ -57,11 +57,7 @@
                         <td>@items.Email</td>
                         <td>@items.Password</td>
                         <td>@items.City</td>
-                        <td>
-                            <span class="badge @(items.IsActive ? "bg-success" : "bg-danger")">
-                                @(items.IsActive ? "Active" : "Inactive")
-                            </span>
-                        </td>
+                     
                         <td>@items.MobileNo</td>
                         <td>@items.Address</td>
                         <td>@items.PinCode</td>

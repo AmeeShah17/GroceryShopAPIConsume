@@ -1,6 +1,7 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace GroceryShopAPIConsume.Controllers.User
 {
@@ -17,6 +18,9 @@ namespace GroceryShopAPIConsume.Controllers.User
         [HttpGet]
         public IActionResult Index()
         {
+            var viewModel = new SubCategoryProductViewModel();
+
+
             List<SubCategoryModel> subcategory = new List<SubCategoryModel>();
             HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/SubCategory/GetAll").Result;
             if (response.IsSuccessStatusCode)
@@ -90,6 +94,28 @@ namespace GroceryShopAPIConsume.Controllers.User
             }
 
             return View(products);
+        }
+        public async Task<IActionResult> Profile()
+        {
+            string token = HttpContext.Session.GetString("JWTToken");  // Get Token from Session
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction("Login", "Customer");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.GetAsync($"{_client.BaseAddress}/Customer/GetProfile");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var customer = JsonConvert.DeserializeObject<CustomerModel>(jsonData);
+                return View(customer);
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Failed to load profile.";
+                return View();
+            }
         }
 
     }

@@ -112,5 +112,75 @@ namespace GroceryShopAPIConsume.Controllers.Admin
             return View("AddUser", new UserModel());
         }
         #endregion
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginModel loginModel)
+        {
+            if (!ModelState.IsValid)
+                return View(loginModel);
+
+            var jsonData = JsonConvert.SerializeObject(loginModel);
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync($"{_client.BaseAddress}/User/Login", content);
+
+                if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<dynamic>(responseData);
+
+                string token = result.token;
+
+                HttpContext.Session.SetString("JWTToken", token);  // Store token in session
+
+                return RedirectToAction("Index", "Home");  // Redirect to dashboard
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Invalid Username or Password!";
+                return View();
+            }
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(UserRegisterModel registerModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Invalid Registration Data!";
+                return View(registerModel);
+            }
+
+            var jsonData = JsonConvert.SerializeObject(registerModel);
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync($"{_client.BaseAddress}/User/Register", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Registration Failed!";
+                return View();
+            }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("JWTToken");  // Remove token
+            return RedirectToAction("Login");
+        }
     }
+
 }

@@ -34,7 +34,7 @@
                     <th>User ID</th>
                     <th>User Name</th>
                     <th>Email</th>
-                    <th>Is Active</th>
+                 
                     <th>Password</th>
                     <th>Created</th>
                     <th>Modified</th>
@@ -50,11 +50,7 @@
                         <td>@items.UserID</td>
                         <td>@items.UserName</td>
                         <td>@items.Email</td>
-                        <td>
-                            <span class="badge @(items.IsActive ? "bg-success" : "bg-danger")">
-                                @(items.IsActive ? "Active" : "Inactive")
-                            </span>
-                        </td>
+                     
                         <td>@items.Password</td>
                         <td>@items.Created</td>
                         <td>@items.Modified</td>
