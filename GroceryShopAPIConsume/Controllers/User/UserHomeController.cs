@@ -18,21 +18,35 @@ namespace GroceryShopAPIConsume.Controllers.User
         [HttpGet]
         public IActionResult Index()
         {
-            var viewModel = new SubCategoryProductViewModel();
-
+            var viewModel = new SubCategoryProductViewModel(); // Create ViewModel instance
 
             List<SubCategoryModel> subcategory = new List<SubCategoryModel>();
+            List<ProductModel> products = new List<ProductModel>();
+
             HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/SubCategory/GetAll").Result;
+            HttpResponseMessage response1 = _client.GetAsync($"{_client.BaseAddress}/Product/GetAll").Result;
+
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;     //convert json data to string 
-                dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(data);     //to sent data to cshtml file we need to deser
-
-                var extractedData = JsonConvert.SerializeObject(jsonobject, Formatting.Indented);
-                subcategory = JsonConvert.DeserializeObject<List<SubCategoryModel>>(extractedData);
+                string data = response.Content.ReadAsStringAsync().Result; // Convert JSON data to string
+                subcategory = JsonConvert.DeserializeObject<List<SubCategoryModel>>(data); // Deserialize JSON
             }
-            return View(subcategory);
-           
+
+            if (response1.IsSuccessStatusCode)
+            {
+                string data1 = response1.Content.ReadAsStringAsync().Result; // Corrected API response
+                products = JsonConvert.DeserializeObject<List<ProductModel>>(data1); // Deserialize JSON
+
+                // Select 6 random products
+                Random rand = new Random();
+                products = products.OrderBy(x => rand.Next()).Take(10).ToList();
+            }
+
+            // Assign the lists to ViewModel
+            viewModel.SubCategories = subcategory;
+            viewModel.Products = products;
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> ProductsBySubCategory(int? SubCategoryID)
@@ -68,33 +82,7 @@ namespace GroceryShopAPIConsume.Controllers.User
             return View(products);
         }
 
-        public async Task<IActionResult> HomePageProducts()
-        {
-            List<ProductModel> products = new List<ProductModel>();
-
-            try
-            {
-                // Fetch all products from API
-                var response = await _client.GetAsync($"{_client.BaseAddress}/Product/GetAll");
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadAsStringAsync();
-                    products = JsonConvert.DeserializeObject<List<ProductModel>>(data);
-
-                    // Select 6 random products (change number as needed)
-                    Random rand = new Random();
-                    products = products.OrderBy(x => rand.Next()).Take(6).ToList();
-                    
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching products: {ex.Message}");
-                ViewBag.ErrorMessage = "An error occurred while fetching products.";
-            }
-
-            return View(products);
-        }
+       
         public async Task<IActionResult> Profile()
         {
             string token = HttpContext.Session.GetString("JWTToken");  // Get Token from Session

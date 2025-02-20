@@ -179,7 +179,7 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         public IActionResult Logout()
         {
             HttpContext.Session.Remove("JWTToken");  // Remove token
-            return RedirectToAction("Login");
+            return RedirectToAction("Login","User");
         }
     }
 

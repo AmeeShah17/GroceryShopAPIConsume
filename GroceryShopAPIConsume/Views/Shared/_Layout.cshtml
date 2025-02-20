@@ -106,10 +106,10 @@
                                 <div class="dropdown-content-body">
                                     <ul>
                                         <li>
-                                            <a asp-action="Login" asp-controller="User"><i class="icon-user"></i> <span>Profile</span></a>
+                                            <a asp-action="Profile" asp-controller="Home"><i class="icon-user"></i> <span>Profile</span></a>
                                         </li>
                   
-                                        <li><a href="page-login.html"><i class="icon-key"></i> <span>Logout</span></a></li>
+                                        <li><a asp-action="Logout" asp-controller="User"><i class="icon-key"></i> <span>Logout</span></a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -130,51 +130,51 @@
                         
                     </li>
                 <li class="has-arrow">
-                        <a asp-action="CategoryDisplay" asp-controller="Category">
+                        <a asp-action="CategoryDisplay" asp-controller="Category" style="text-decoration:none">
                             <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Category</span>
                         </a>
                         
                     </li>
                    
                     <li>
-                        <a class="has-arrow" asp-action="SubCategoryDisplay" asp-controller="SubCategory" aria-expanded="false">
+                    <a class="has-arrow" asp-action="SubCategoryDisplay" asp-controller="SubCategory" style="text-decoration:none">
                             <i class="icon-envelope menu-icon"></i> <span class="nav-text">Sub-Category</span>
                         </a>
                        
                     </li>
                     <li>
-                        <a class="has-arrow" asp-action="ProductDisplay" asp-controller="Product" aria-expanded="false">
+                    <a class="has-arrow" asp-action="ProductDisplay" asp-controller="Product" style="text-decoration:none">
                             <i class="icon-screen-tablet menu-icon"></i><span class="nav-text">Product</span>
                         </a>
                        
                     </li>
                     <li>
-                        <a class="has-arrow" asp-action="CustomerDisplay" asp-controller="Customer">
+                    <a class="has-arrow" asp-action="CustomerDisplay" asp-controller="Customer" style="text-decoration:none">
                             <i class="icon-graph menu-icon"></i> <span class="nav-text">Customer</span>
                         </a>
                         
                     </li>
                     
                     <li>
-                        <a class="has-arrow" asp-action="UserDisplay" asp-controller="User">
+                    <a class="has-arrow" asp-action="UserDisplay" asp-controller="User" style="text-decoration:none">
                             <i class="icon-grid menu-icon"></i><span class="nav-text">User</span>
                         </a>
                         
                     </li>
                     <li>
-                    <a class ="has-arrow" aria-expanded="false" asp-action="OrderDisplay" asp-controller="Order">
+                    <a class="has-arrow" aria-expanded="false" asp-action="OrderDisplay" asp-controller="Order" style="text-decoration:none">
                             <i class="icon-badge menu-icon"></i><span class="nav-text">Order</span>
                         </a>
                     </li>
                     <li>
-                        <a class="has-arrow" asp-action="OrderDetailDisplay" asp-controller="OrderDetail">
+                    <a class="has-arrow" asp-action="OrderDetailDisplay" asp-controller="OrderDetail" style="text-decoration:none">
                             <i class="icon-note menu-icon"></i><span class="nav-text">Order Detail</span>
                         </a>
                         
                     </li>
                     
                     <li>
-                        <a class="has-arrow" asp-action="BillDisplay" asp-controller="Bill">
+                    <a class="has-arrow" asp-action="BillDisplay" asp-controller="Bill" style="text-decoration:none">
                             <i class="icon-menu menu-icon"></i><span class="nav-text">Bill</span>
                         </a>
                         

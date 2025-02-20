@@ -182,8 +182,5 @@ namespace GroceryShopAPIConsume.Controllers.Admin
             HttpContext.Session.Remove("JWTToken");  // Remove token
             return RedirectToAction("Login","Customer");
         }
-
-        
-
     }
 }

@@ -3,15 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Data;
 using System.Data.SqlClient;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace GroceryShopAPIConsume.Controllers.Admin
 {
     public class HomeController : Controller
     {
+        Uri baseAddress = new Uri("https://localhost:7011/api");
         private readonly string _connectionstring;
+        private readonly HttpClient _client;
         public HomeController(IConfiguration configuration)
         {
             _connectionstring = configuration.GetConnectionString("GroceryStore");
+            _client = new HttpClient();
+            _client.BaseAddress = baseAddress; ;
         }
 
 
@@ -74,8 +80,32 @@ namespace GroceryShopAPIConsume.Controllers.Admin
 
             return View(dashboardData);
         }
+
+        public async Task<IActionResult> Profile()
+        {
+            string token = HttpContext.Session.GetString("JWTToken");  // Get Token from Session
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction("Login", "User");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.GetAsync($"{_client.BaseAddress}/User/GetProfile");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<UserModel>(jsonData);
+                return View(user);
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Failed to load profile.";
+                return View();
+            }
+        }
+
     }
 
-        
-    }
+
+}
 
