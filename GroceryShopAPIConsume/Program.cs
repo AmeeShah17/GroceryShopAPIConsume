@@ -1,3 +1,5 @@
+using GroceryShopAPIConsume;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
@@ -18,7 +20,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-
+builder.Services.AddHttpClient<AuthService>();
+// Register HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+// Enable session support
+builder.Services.AddSession();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -33,6 +39,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
+app.UseStaticFiles();
 
 app.UseAuthorization();
 

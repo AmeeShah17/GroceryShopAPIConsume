@@ -39,7 +39,7 @@ namespace GroceryShopAPIConsume.Controllers.User
                         if (response.IsSuccessStatusCode)
                         {
                             //TempData["Message"] = "Record Inserted Successfully";
-                            return RedirectToAction("Index","UserHome");
+                            return RedirectToAction("OrderPlaced","UserCart");
                         }
                     }
                 }
@@ -58,6 +58,11 @@ namespace GroceryShopAPIConsume.Controllers.User
             var token = HttpContext.Session.GetString("JWTToken"); // Retrieve the token from session
             ViewBag.Token = token; // Pass the token to the view
             return View();
+        }
+
+        public IActionResult OrderPlaced()
+        {
+            return View();  
         }
     }
 }

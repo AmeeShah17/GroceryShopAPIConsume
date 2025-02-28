@@ -1,6 +1,7 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers.Admin
@@ -8,39 +9,72 @@ namespace GroceryShopAPIConsume.Controllers.Admin
     public class BillController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:7011/api");
-        private readonly HttpClient _client;
-
-        public BillController()
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<BillController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public BillController(ILogger<BillController> logger, IHttpContextAccessor httpContextAccessor, HttpClient httpClient)
         {
-            _client = new HttpClient();
-            _client.BaseAddress = baseAddress; ;
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = baseAddress; ;
+            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         #region Display
 
         [HttpGet]
-        public IActionResult BillDisplay()
+        public async Task<IActionResult> BillDisplay()
         {
-            List<BillModel> bill = new List<BillModel>();
-            HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/Bill/GetAll").Result;
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7011/api/Bill/GetAll");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
+
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;     //convert json data to string 
-                dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(data);     //to sent data to cshtml file we need to deser
+                var result = await response.Content.ReadAsStringAsync();
 
-                var extractedData = JsonConvert.SerializeObject(jsonobject, Formatting.Indented);
-                bill = JsonConvert.DeserializeObject<List<BillModel>>(extractedData);
+                // Deserialize the JSON string into a list of Category objects
+                var bill = JsonConvert.DeserializeObject<List<BillModel>>(result);
+
+                // Pass the list of categories to the view
+                return View(bill);
             }
-            return View(bill);
+            else
+            {
+                TempData["ErrorMessage"] = "Unable to fetch category data. Please try again later.";
+                return View();
+            }
         }
         #endregion
 
         #region Delete
 
         [HttpGet]
-        public IActionResult Delete(int BillID)
+        public async Task< IActionResult> Delete(int BillID)
         {
-            HttpResponseMessage response = _client.DeleteAsync($"{_client.BaseAddress}/Bill/Delete/{BillID}").Result;
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://localhost:7011/api/Bill/Delete/{BillID}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
+
             if (response.IsSuccessStatusCode)
             {
                 TempData["Message"] = "Bill Deleted";
@@ -56,30 +90,51 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         {
             try
             {
+                // Retrieve the JWT token from the session
+                var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+                if (string.IsNullOrEmpty(token))
+                {
+                    TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                    return RedirectToAction("Login", "Auth");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var json = JsonConvert.SerializeObject(bill);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Create an HttpClient instance
+                    var client = new HttpClient();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
                     HttpResponseMessage response;
 
                     if (bill.BillID == null || bill.BillID == 0)
                     {
-                        response = await _client.PostAsync($"{_client.BaseAddress}/Bill/Add", content);
+                        // POST request to add a new category
+                        response = await client.PostAsync($"{_httpClient.BaseAddress}/Bill/Add", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Inserted Successfully";
                             return RedirectToAction("BillDisplay");
                         }
                     }
-
                     else
                     {
-                        response = await _client.PutAsync($"{_client.BaseAddress}/Bill/Update/{bill.BillID}", content);
+                        // PUT request to update an existing category
+                        response = await client.PutAsync($"{_httpClient.BaseAddress}/Bill/Update/{bill.BillID}", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Updated Successfully";
                             return RedirectToAction("BillDisplay");
                         }
+                    }
+
+                    // Handle API errors
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorMessage = await response.Content.ReadAsStringAsync();
+                        TempData["ErrorMessage"] = $"API Error: {errorMessage}";
                     }
                 }
             }
@@ -100,9 +155,22 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         {
             await LoadOrderist();
             await LoadCustomerist();
+
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                return RedirectToAction("Login", "Auth");
+            }
+            Console.WriteLine(token);
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7011/api/Bill/GetbyID/{BillID}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
             if (BillID.HasValue)
             {
-                var response = await _client.GetAsync($"{_client.BaseAddress}/Bill/GetbyID/{BillID}");
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
@@ -119,7 +187,18 @@ namespace GroceryShopAPIConsume.Controllers.Admin
 
         private async Task LoadOrderist()
         {
-            var response = await _client.GetAsync($"{_client.BaseAddress}/Bill/OrderDropDown/Order");
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+            }
+            Console.WriteLine(token);
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7011/api/Bill/OrderDropDown/Order");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -133,7 +212,18 @@ namespace GroceryShopAPIConsume.Controllers.Admin
 
         private async Task LoadCustomerist()
         {
-            var response = await _client.GetAsync($"{_client.BaseAddress}/Bill/CustomerDropDown/Customer");
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+            }
+            Console.WriteLine(token);
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7011/api/Bill/CustomerDropdown/Customer");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();

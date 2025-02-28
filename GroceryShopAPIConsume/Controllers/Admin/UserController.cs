@@ -9,11 +9,15 @@ namespace GroceryShopAPIConsume.Controllers.Admin
     {
         Uri baseAddress = new Uri("https://localhost:7011/api");
         private readonly HttpClient _client;
+        private readonly AuthService _authService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserController()
+        public UserController(AuthService authService, IHttpContextAccessor httpContextAccessor)
         {
             _client = new HttpClient();
             _client.BaseAddress = baseAddress; ;
+            _authService = authService;
+            _httpContextAccessor = httpContextAccessor;
         }
         #region Display
         [HttpGet]
@@ -118,32 +122,22 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(UserLoginModel loginModel)
+        public async Task<IActionResult> Login(string Username, string Password)
         {
-            if (!ModelState.IsValid)
-                return View(loginModel);
+            
+            var jsonData = await _authService.AuthenticateUserAsync(Username, Password);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(jsonData);
+            string token = data["token"];
 
-            var jsonData = JsonConvert.SerializeObject(loginModel);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-            var response = await _client.PostAsync($"{_client.BaseAddress}/User/Login", content);
-
-                if (response.IsSuccessStatusCode)
+            if (token == null)
             {
-                var responseData = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<dynamic>(responseData);
-
-                string token = result.token;
-
-                HttpContext.Session.SetString("JWTToken", token);  // Store token in session
-
-                return RedirectToAction("Index", "Home");  // Redirect to dashboard
-            }
-            else
-            {
-                ViewBag.ErrorMessage = "Invalid Username or Password!";
+                ViewBag.Error = "Invalid credentials.";
                 return View();
             }
+
+            _httpContextAccessor.HttpContext.Session.SetString("JWTToken", token);
+
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Register()
@@ -178,8 +172,8 @@ namespace GroceryShopAPIConsume.Controllers.Admin
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("JWTToken");  // Remove token
-            return RedirectToAction("Login","User");
+            _httpContextAccessor.HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 

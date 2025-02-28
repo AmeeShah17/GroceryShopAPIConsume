@@ -7,31 +7,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
+    <title>Food Cart</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background: #f8f9fc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .cart-container {
+            max-width: 800px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .item-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .item-details {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .item-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .promo-input {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: #007bff;
+            color: #fff;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+            .checkout-btn:hover {
+                background: #0056b3;
+            }
+    </style>
 </head>
 <body>
-
     <div class="cart-container">
-        <h3>🛒 Your Shopping Cart</h3>
-        <table class="table table-bordered cart-table">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Remove</th>
-                </tr>
-            </thead>
-            <tbody id="cartItems"></tbody>
-        </table>
-
-        <div class="total-price">Total Price: <span id="totalPrice">0.00 Rs.</span></div>
-
-        <button class="checkout-btn" asp-action="AddOrderForm" asp-controller="UserCart" id="checkoutBtn">Proceed to Checkout</button>
+        <h3 class="fw-bold text-center mb-4">Your Food Cart</h3>
+        <div id="cartItems"></div>
+        <div class="summary">
+            <p>Tax <span class="float-end" id="tax">Rs. 0.00</span></p>
+            <p>Delivery <span class="float-end" id="delivery">Rs. 0.00</span></p>
+            <p>Promo discount <span class="float-end">Rs. 0.00</span></p>
+            <hr>
+            <h4 class="total-price">Subtotal <span class="float-end fw-bold" id="totalPrice">Rs.0.00</span></h4>
+        </div>
+        <a asp-action="AddOrderForm" asp-controller="UserCart">
+        <button  class="checkout-btn" id="checkoutBtn">    
+                Proceed to Checkout  
+        </button>
+        </a>
     </div>
 
     <script>
@@ -40,14 +106,14 @@
 
             function loadCart() {
                 var cart = localStorage.getItem("cart");
-                var cartTable = $("#cartItems");
-                cartTable.empty();
+                var cartContainer = $("#cartItems");
+                cartContainer.empty();
                 var totalPrice = 0;
 
                 if (cart) {
                     cart = JSON.parse(cart);
                     if (cart.length === 0) {
-                        cartTable.append("<tr><td colspan='6' class='text-center'>No items in cart</td></tr>");
+                        cartContainer.append("<div class='text-center'>No items in cart</div>");
                         $("#totalPrice").text("0.00 Rs.");
                         return;
                     }
@@ -55,26 +121,25 @@
                     cart.forEach(function (item, index) {
                         var itemTotal = item.price * item.quantity;
                         totalPrice += itemTotal;
-
-                        var row = `<tr>
-                                    <td><img src='${item.image}'/></td>
-                                    <td>${item.name}</td>
-                                    <td>Rs. ${item.price.toFixed(2)}</td>
-                                    <td class='quantity-control'>
-                                        <button class='btn-decrease' data-index='${index}'>-</button>
-                                        <span>${item.quantity}</span>
-                                        <button class='btn-increase' data-index='${index}'>+</button>
-                                    </td>
-                                    <td>Rs. ${itemTotal.toFixed(2)}</td>
-                                    <td><button class='btn-remove' data-index='${index}'>X</button></td>
-                                </tr>`;
-
-                        cartTable.append(row);
+                        var cartItem = `<div class="cart-item">
+                                                    <img src="${item.image}" alt="${item.name}" class="item-image">
+                                                    <div class="quantity-control">
+                                                        <button class="btn btn-light btn-decrease" data-index="${index}">-</button>
+                                                        <span>${item.quantity}</span>
+                                                        <button class="btn btn-light btn-increase" data-index="${index}">+</button>
+                                                    </div>
+                                                    <div class="item-details">
+                                                        <div class="item-title">${item.name}</div>
+                                                        <div class="text-primary fw-bold">Rs. ${item.price.toFixed(2)}</div>
+                                                        <small>${item.description || ''}</small>
+                                                    </div>
+                                                    <button class="btn btn-outline-danger btn-sm btn-remove" data-index="${index}">&times;</button>
+                                                </div>`;
+                        cartContainer.append(cartItem);
                     });
-
-                    $("#totalPrice").text("Rs." + totalPrice.toFixed(2));
+                    $("#totalPrice").text("Rs. " + totalPrice.toFixed(2));
                 } else {
-                    cartTable.append("<tr><td colspan='6' class='text-center'>No items in cart</td></tr>");
+                    cartContainer.append("<div class='text-center'>No items in cart</div>");
                 }
             }
 
@@ -98,6 +163,21 @@
                 loadCart();
             });
 
+            function saveTotalPrice() {
+                var totalPrice = document.getElementById("totalPrice").innerText.replace("Rs.", "").trim();
+                localStorage.setItem("OrderTotalPrice", totalPrice);
+            }
+
+            $("#checkoutBtn").click(function () {
+                if (localStorage.getItem("cart") && JSON.parse(localStorage.getItem("cart")).length > 0) {
+                    saveTotalPrice();  // Save total before redirect
+                    window.location.href = "/UserCart/AddOrderForm";
+                } else {
+                    alert("Your cart is empty!");
+                }
+            });
+
+
             $(document).on("click", ".btn-remove", function () {
                 var index = $(this).data("index");
                 var cart = JSON.parse(localStorage.getItem("cart"));
@@ -106,25 +186,11 @@
                 loadCart();
             });
 
-            $("#checkoutBtn").click(function () {
-                if (localStorage.getItem("cart") && JSON.parse(localStorage.getItem("cart")).length > 0) {
-                    saveTotalPrice();
-                    window.location.href = "/UserCart/AddOrderForm";
-                } else {
-                    alert("Your cart is empty!");
-                }
-            });
 
-            function saveTotalPrice() {
-                var totalPrice = document.getElementById("totalPrice").innerText.replace("Rs.", "").trim();
-                localStorage.setItem("OrderTotalPrice", totalPrice);
-            }
         });
-
-       
-
     </script>
-    
-
+    <script>
+        
+    </script>
 </body>
 </html>

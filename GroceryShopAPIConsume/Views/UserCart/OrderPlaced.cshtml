@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "_UserLayout";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      
+        body {
+            background: #f8f9fc;
+            font-family: 'Raleway', sans-serif;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+
+        }
+        .confirmation-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            border: 2px solid #50c878;
+            position: relative;
+            margin-left:530px;
+            margin-top:100px;
+        }
+        .confirmation-card img {
+            width: 50px;
+            margin-bottom: 15px;
+        }
+        .confirmation-card h4 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .confirmation-card p {
+            color: #666;
+            font-weight: 400;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #ff4d4d;
+            cursor: pointer;
+        }
+        .home-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #50c878;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .home-btn:hover {
+            background: #3ea563;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-card">
+        <button class="close-btn">&times;</button>
+        <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Success">
+        <h4>Woohoo!</h4>
+        <p><strong>Your order has been placed</strong></p>
+        <p>Pull up a chair, sit back and relax as your order is on its way to you!</p>
+        <a asp-action="Index" asp-controller="UserHome" class="home-btn">Go to Home</a>
+    </div>
+</body>
+</html>

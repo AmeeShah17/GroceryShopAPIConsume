@@ -1,6 +1,8 @@
 ﻿using GroceryShopAPIConsume.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers.Admin
@@ -9,38 +11,71 @@ namespace GroceryShopAPIConsume.Controllers.Admin
     {
 
         Uri baseAddress = new Uri("https://localhost:7011/api");
-        private readonly HttpClient _client;
-
-        public CategoryController()
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<CategoryController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public CategoryController(ILogger<CategoryController> logger, IHttpContextAccessor httpContextAccessor, HttpClient httpClient)
         {
-            _client = new HttpClient();
-            _client.BaseAddress = baseAddress; ;
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = baseAddress; ;
+            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+           
         }
         #region Display
 
         [HttpGet]
-        public IActionResult CategoryDisplay()
+        public async Task<IActionResult> CategoryDisplay()
         {
-            List<CategoryModel> category = new List<CategoryModel>();
-            HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/Category/GetAll").Result;
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7011/api/Category/GetAll");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
+
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;     //convert json data to string 
-                dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(data);     //to sent data to cshtml file we need to deser
+                var result = await response.Content.ReadAsStringAsync();
 
-                var extractedData = JsonConvert.SerializeObject(jsonobject, Formatting.Indented);
-                category = JsonConvert.DeserializeObject<List<CategoryModel>>(extractedData);
+                // Deserialize the JSON string into a list of Category objects
+                var categories = JsonConvert.DeserializeObject<List<CategoryModel>>(result);
+
+                // Pass the list of categories to the view
+                return View(categories);
             }
-            return View(category);
+            else
+            {
+                TempData["ErrorMessage"] = "Unable to fetch category data. Please try again later.";
+                return View();
+            }
         }
         #endregion
 
         #region delete
 
         [HttpGet]
-        public IActionResult Delete(int CategoryID)
+        public async Task<IActionResult> Delete(int CategoryID)
         {
-            HttpResponseMessage response = _client.DeleteAsync($"{_client.BaseAddress}/Category/Delete/{CategoryID}").Result;
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://localhost:7011/api/Category/Delete/{CategoryID}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
+
             if (response.IsSuccessStatusCode)
             {
                 TempData["Message"] = "Category Deleted";
@@ -52,47 +87,66 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         #region Save
 
 
+
         [HttpPost]
         public async Task<IActionResult> Save([FromForm] CategoryModel category)
         {
             try
             {
+                // Retrieve the JWT token from the session
+                var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+                if (string.IsNullOrEmpty(token))
+                {
+                    TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                    return RedirectToAction("Login", "Auth");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var json = JsonConvert.SerializeObject(category);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Create an HttpClient instance
+                    var client = new HttpClient();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
                     HttpResponseMessage response;
 
                     if (category.CateoryID == null || category.CateoryID == 0)
                     {
-                        response = await _client.PostAsync($"{_client.BaseAddress}/Category/Add", content);
+                        // POST request to add a new category
+                        response = await client.PostAsync($"{_httpClient.BaseAddress}/Category/Add", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Inserted Successfully";
                             return RedirectToAction("CategoryDisplay");
                         }
                     }
-
                     else
                     {
-                        response = await _client.PutAsync($"{_client.BaseAddress}/Category/Update/{category.CateoryID}", content);
+                        // PUT request to update an existing category
+                        response = await client.PutAsync($"{_httpClient.BaseAddress}/Category/Update/{category.CateoryID}", content);
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Updated Successfully";
                             return RedirectToAction("CategoryDisplay");
                         }
                     }
-                }
 
-                //if (response.IsSuccessStatusCode)
-                //    return RedirectToAction("ProductDisplay");
+                    // Handle API errors
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorMessage = await response.Content.ReadAsStringAsync();
+                        TempData["ErrorMessage"] = $"API Error: {errorMessage}";
+                    }
+                }
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
                 Console.WriteLine(TempData["ErrorMessage"]);
             }
-            //await LoadUserList();
+
             return RedirectToAction("CategoryDisplay");
         }
         #endregion
@@ -101,10 +155,21 @@ namespace GroceryShopAPIConsume.Controllers.Admin
 
         public async Task<IActionResult> AddCategory(int? CategoryID)
         {
-            //await LoadUserList();
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "User not authenticated. Please log in.";
+                return RedirectToAction("Login", "Auth");
+            }
+            Console.WriteLine(token);
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7011/api/Category/GetbyID/{CategoryID}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.SendAsync(request);
             if (CategoryID.HasValue)
             {
-                var response = await _client.GetAsync($"{_client.BaseAddress}/Category/GetbyID/{CategoryID}");
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
