@@ -31,7 +31,7 @@
         <div class="form-container">
             <h5>Product Form</h5>
 
-            <form method="post" asp-action="Save" asp-controller="Product">
+            <form method="post" asp-action="Save" asp-controller="Product" enctype="multipart/form-data">
                 <input type="hidden" class="form-control" asp-for="ProductID">
 
                 <div class="mb-3">
@@ -41,7 +41,20 @@
 
                 <div class="mb-3">
                     <label class="col-form-label">Product Image URL</label>
-                    <input type="text" class="form-control" asp-for="ProductImage">
+                    @* <input type="text" class="form-control" asp-for="ProductImage"> *@
+                    <input type="file" asp-for="ImageFile" class="form-control" />
+
+                    @if (!string.IsNullOrEmpty(Model?.ProductImage))
+                    {
+                        <div>
+                            <label>Current Image:</label>
+                            @if (!string.IsNullOrEmpty(Model?.ProductImage))
+                            {
+                                <img src="@Model.ProductImage" width="100" />
+                            }
+
+                        </div>
+                    }
                 </div>
 
                 <div class="mb-3">

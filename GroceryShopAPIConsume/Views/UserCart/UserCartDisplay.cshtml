@@ -121,22 +121,26 @@
                     cart.forEach(function (item, index) {
                         var itemTotal = item.price * item.quantity;
                         totalPrice += itemTotal;
-                        var cartItem = `<div class="cart-item">
-                                                    <img src="${item.image}" alt="${item.name}" class="item-image">
-                                                    <div class="quantity-control">
-                                                        <button class="btn btn-light btn-decrease" data-index="${index}">-</button>
-                                                        <span>${item.quantity}</span>
-                                                        <button class="btn btn-light btn-increase" data-index="${index}">+</button>
-                                                    </div>
-                                                    <div class="item-details">
-                                                        <div class="item-title">${item.name}</div>
-                                                        <div class="text-primary fw-bold">Rs. ${item.price.toFixed(2)}</div>
-                                                        <small>${item.description || ''}</small>
-                                                    </div>
-                                                    <button class="btn btn-outline-danger btn-sm btn-remove" data-index="${index}">&times;</button>
-                                                </div>`;
+
+                        var cartItem = `
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}" class="item-image">
+                    <div class="quantity-control">
+                        <button class="btn btn-light btn-decrease" data-index="${index}">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="btn btn-light btn-increase" data-index="${index}">+</button>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-title">${item.name}</div>
+                        <div class="text-primary fw-bold">Rs. ${item.price.toFixed(2)}</div>
+                        <small>${item.description || ''}</small>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm btn-remove" data-index="${index}">&times;</button>
+                </div>
+            `;
                         cartContainer.append(cartItem);
                     });
+
                     $("#totalPrice").text("Rs. " + totalPrice.toFixed(2));
                 } else {
                     cartContainer.append("<div class='text-center'>No items in cart</div>");
@@ -189,8 +193,6 @@
 
         });
     </script>
-    <script>
-        
-    </script>
+    
 </body>
 </html>

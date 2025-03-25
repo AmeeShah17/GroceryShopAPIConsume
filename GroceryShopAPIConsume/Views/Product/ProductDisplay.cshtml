@@ -90,7 +90,12 @@
                     <tr>
                         <td>@items.ProductID</td>
                         <td>
-                            <img src="@items.ProductImage" height="100px" width="100px" class="rounded" width="50" />
+                            @* <img src="@items.ProductImage" height="100px" width="100px" class="rounded" width="50" /> *@
+                            @if (!string.IsNullOrEmpty(items.ProductImage))
+                            {
+                                <img src="@items.ProductImage" width="100" />
+                            }
+
                         </td>
                         <td>@items.ProductName</td>
                         <td>@items.ProductPrice</td>

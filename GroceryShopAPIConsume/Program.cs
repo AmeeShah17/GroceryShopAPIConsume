@@ -39,7 +39,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
-app.UseStaticFiles();
+
 
 app.UseAuthorization();
 

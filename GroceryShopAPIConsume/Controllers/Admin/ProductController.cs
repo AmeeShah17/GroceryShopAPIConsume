@@ -66,19 +66,44 @@ namespace GroceryShopAPIConsume.Controllers.Admin
         #region Save
 
         [HttpPost]
-        public async Task<IActionResult> Save([FromForm] ProductModel product)
+        public async Task<IActionResult> Save(ProductModel product)
         {
             try
             {
-                if (ModelState.IsValid)
+                using (var content = new MultipartFormDataContent())
                 {
-                    var json = JsonConvert.SerializeObject(product);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    content.Add(new StringContent(product.ProductName), "ProductName");
+                    content.Add(new StringContent(product.SubCategoryID.ToString()), "SubCategoryID");
+                    content.Add(new StringContent(product.ProductPrice.ToString()), "ProductPrice");
+                    content.Add(new StringContent(product.ProductCode.ToString()), "ProductCode");
+                    content.Add(new StringContent(product.Description.ToString()), "Description");
+
+
+                    if (product.ImageFile != null)
+                    {
+                        var fileStream = product.ImageFile.OpenReadStream();
+                        content.Add(new StreamContent(fileStream), "ImageFile", product.ImageFile.FileName);
+                        }
+
+                   
                     HttpResponseMessage response;
 
                     if (product.ProductID == null || product.ProductID == 0)
                     {
+                        // Add new product
                         response = await _client.PostAsync($"{_client.BaseAddress}/Product/Add", content);
+                        TempData["Message"] = response.IsSuccessStatusCode ? "Product added successfully!" : "Error adding product.";
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Inserted Successfully";
+                            return RedirectToAction("ProductDisplay");
+                        }
+                    }
+                    else
+                    {
+                        // Update existing product
+                        response = await _client.PutAsync($"{_client.BaseAddress}/Product/Update/{product.ProductID}", content);
+                        TempData["Message"] = response.IsSuccessStatusCode ? "Product updated successfully!" : "Error updating product.";
                         if (response.IsSuccessStatusCode)
                         {
                             TempData["Message"] = "Record Inserted Successfully";
@@ -86,26 +111,16 @@ namespace GroceryShopAPIConsume.Controllers.Admin
                         }
                     }
 
-                    else
-                    {
-                        response = await _client.PutAsync($"{_client.BaseAddress}/Product/Update/{product.ProductID}", content);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            TempData["Message"] = "Record Updated Successfully";
-                            return RedirectToAction("ProductDisplay");
-                        }
-                    }
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
-                Console.WriteLine(TempData["ErrorMessage"]);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
             }
             await LoadSubCategoryList();
-            
             return RedirectToAction("ProductDisplay");
         }
+
         #endregion
 
         #region AddProduct

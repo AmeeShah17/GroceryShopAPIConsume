@@ -29,7 +29,10 @@
                                             </a>
                                             <figure>
                                                 <a title="@item.ProductName" asp-action="ProductByID" asp-controller="ProductDetail" asp-route-ProductID="@item.ProductID">
-                                                    <img src="@item.ProductImage" class="tab-image">
+                                                @if (!string.IsNullOrEmpty(item.ProductImage))
+                                                     {
+                                                        <img src="@item.ProductImage" width="100" class="tab-image" />
+                                                }
                                                 </a>
 
                                             </figure>

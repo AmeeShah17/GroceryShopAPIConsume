@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace GroceryShopAPIConsume.Controllers.User
 {
@@ -106,6 +107,65 @@ namespace GroceryShopAPIConsume.Controllers.User
             }
         }
 
+        public async Task<IActionResult> AddUser(int? UserID)
+        {
+            //await LoadUserList();
+            if (UserID.HasValue)
+            {
+                var response = await _client.GetAsync($"{_client.BaseAddress}/User/GetbyID/{UserID}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var user = JsonConvert.DeserializeObject<UserModel>(data);
+                    //ViewBag.userList = await GetStatesByCountryID(city.CountryID);
+                    return View(user);
+                }
+            }
+            return View("EditUser", new UserModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Save([FromForm] UserModel user)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var json = JsonConvert.SerializeObject(user);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response;
+
+                    if (user.UserID == null || user.UserID == 0)
+                    {
+                        response = await _client.PostAsync($"{_client.BaseAddress}/User/Add", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Inserted Successfully";
+                            return RedirectToAction("UserDisplay");
+                        }
+                    }
+
+                    else
+                    {
+                        response = await _client.PutAsync($"{_client.BaseAddress}/User/Update/{user.UserID}", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["Message"] = "Record Updated Successfully";
+                            return RedirectToAction("UserDisplay");
+                        }
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                Console.WriteLine(TempData["ErrorMessage"]);
+            }
+            //await LoadUserList();
+            return RedirectToAction("UserDisplay");
+        }
 
     }
 }
